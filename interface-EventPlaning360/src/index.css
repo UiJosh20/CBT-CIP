@@ -31,6 +31,12 @@
     font-weight: 500;
     font-style: normal;
   }
+  .poppins-medium-sm {
+    font-family: "Poppins", sans-serif;
+    font-weight: 500;
+    font-style: normal;
+    font-size: 13px;
+  }
   
   .poppins-semibold {
     font-family: "Poppins", sans-serif;
@@ -48,6 +54,13 @@
     font-family: "Poppins", sans-serif;
     font-weight: 800;
     font-style: normal;
+  }
+  .poppins-extrabold-lg {
+    font-family: "Poppins", sans-serif;
+    font-weight: 800;
+    font-style: normal;
+    font-size: 55px;
+    width: 650px;
   }
   
   .poppins-black {
@@ -108,5 +121,22 @@
     font-family: "Poppins", sans-serif;
     font-weight: 900;
     font-style: italic;
+  }
+
+  .homeBg{
+    background-image: url("https://res.cloudinary.com/dubaep0qz/image/upload/v1712610998/360event/sjii6m4b7j1lkkfj9qs0.jpg");
+    background-size: cover;
+    height: 100vh;
+  }
+  .smallfont{
+    font-size: 12px;
+  }
+  .custom-color{
+    background-color: #04569f;
+    
+  }
+  .custom-background{
+    background:whitesmoke;
+    height: 100vh;
   }
   
