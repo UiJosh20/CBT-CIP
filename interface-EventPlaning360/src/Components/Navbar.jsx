@@ -25,7 +25,7 @@ const Navbar = () => {
   return (
     <>
     <nav className="custom-color lg:p-2">
-      <marquee behavior="scroll" scrollamount="3" className="text-white poppins-medium-sm">
+      <marquee behavior="scroll" scrollamount="3" className="lg:text-white text-black  poppins-medium-sm">
         <p>Welcome to 360Event, the ultimate platform for event management and planning. Join us today and take your event to the next level!</p>
       </marquee>
     </nav>
