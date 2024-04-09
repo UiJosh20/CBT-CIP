@@ -10,8 +10,8 @@ const Home = () => {
       <h1 className="poppins-extrabold-lg lg:text-black text-white ">Create and Track your event effectively</h1>
       <p className="poppins-regular lg:text-black text-white">we automate your planning and save you time for other things</p>
       <Link to='/signup' className="getStart ">
-        <Button variant="contained" className="!font-bold !lg:mt-5 !mt-20 !lg:block !hidden">Get Started</Button>
-        <Button variant="contained" className="!font-bold !lg:mt-5 !mt-20 !lg:hidden !block !p-3 !bg-black">Get Started</Button>
+        <Button variant="contained" className="!font-bold !lg:mt-5 !mt-10 blueBtn">Get Started</Button>
+        <Button variant="contained" className="!font-bold !lg:mt-5 !mt-20 hideBtn !p-3 !bg-black">Get Started</Button>
         
       </Link>
     </div>

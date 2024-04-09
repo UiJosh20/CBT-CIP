@@ -45,7 +45,7 @@ const Navbar = () => {
         </Link>
         
         </div> 
-        <div className="!lg:hidden !block">
+        <div className="hide !block">
         <MoreVertIcon className="!text-black cursor-pointer " />
         </div>
     </nav>

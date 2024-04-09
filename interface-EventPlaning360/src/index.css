@@ -142,6 +142,15 @@
   nav{
     z-index:99;
   }
+  .hide{
+    display: none !important;
+  }
+  .hideBtn{
+    display: none !important;
+  }
+  .blueBtn{
+    display: block !important;
+  }
 
   @media screen and (max-width: 480px) {
     .custom-color{
@@ -169,5 +178,14 @@
       font-weight: 500;
       font-style: normal;
       font-size: 12px;
+    }
+    .hide{
+      display: block !important;
+    }
+    .hideBtn{
+      display: block !important;
+    }
+    .blueBtn{
+      display: none !important;
     }
   }
