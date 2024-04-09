@@ -1,6 +1,7 @@
 import { Link, NavLink } from "react-router-dom"
 import Button from '@mui/material/Button';
-import { useState } from "react";
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+
 
 
 const Navbar = () => {
@@ -28,7 +29,7 @@ const Navbar = () => {
         <p>Welcome to 360Event, the ultimate platform for event management and planning. Join us today and take your event to the next level!</p>
       </marquee>
     </nav>
-    <nav className="bg-white shadow-inner lg:py-5 lg:px-16 flex justify-between items-center poppins-medium sticky top-0 w-full">
+    <nav className="bg-white shadow-md lg:py-5 lg:px-16 px-5 py-3 flex justify-between items-center poppins-medium sticky top-0 w-full">
         <Link to='/'>
           <h1>360Event</h1>
         </Link>
@@ -42,7 +43,11 @@ const Navbar = () => {
         <Button variant="contained" className=""><p className="poppins-medium-sm">Get Started</p></Button>
         
         </Link>
+        
         </div> 
+        <div className="!lg:hidden !block">
+        <MoreVertIcon className="!text-black cursor-pointer " />
+        </div>
     </nav>
     </>
   )

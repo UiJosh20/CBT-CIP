@@ -136,7 +136,27 @@
     
   }
   .custom-background{
-    background:whitesmoke;
+    background:whitesmoke ;
     height: 100vh;
   }
-  
+  nav{
+    z-index:99;
+  }
+
+  @media screen and (max-width: 480px) {
+    .poppins-extrabold-lg {
+      font-family: "Poppins", sans-serif;
+      font-weight: 800;
+      font-style: normal;
+      font-size: 30px;
+      width: 100%;
+    }
+    .getStart Button{
+      width: 100%;
+    }
+    .homeBg{
+      background-image: linear-gradient(rgb(4,86,159)20%, rgb(255, 230, 0)80%), url("https://res.cloudinary.com/dubaep0qz/image/upload/v1712610998/360event/sjii6m4b7j1lkkfj9qs0.jpg");
+      background-size: cover;
+      height: 100vh;
+    }
+  }
