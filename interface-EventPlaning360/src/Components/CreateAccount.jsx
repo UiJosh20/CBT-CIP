@@ -69,7 +69,7 @@ const CreateAccount = () => {
         </Link>
         <div className="mt-10">
           <h1 className="poppins-bold text-2xl text-center">Create Account</h1>
-          <div className="px-5">
+          <div className="px-5 poppins-medium-sm">
             {(errors.firstName ||
               errors.lastName ||
               errors.email ||
@@ -84,7 +84,7 @@ const CreateAccount = () => {
               </Alert>
             )}
           </div>
-          <form onSubmit={handleSubmit} className="px-2 py-5">
+          <form onSubmit={handleSubmit} className="px-2 py-5 poppins-medium-sm">
             <div className="border flex items-center bg-white p-2 mb-3 rounded-md outline-1 outline-slate-400">
               <input
                 type="text"
@@ -163,8 +163,8 @@ const CreateAccount = () => {
             <p className="text-center my-5">
               you already have an account?
             </p>
-              <Link to="/login" className="text-blue-400 poppins-black ">
-                <Button variant="contained" className="w-full !bg-yellow-500 !shadow-sm !p-3 !font-bold">Login</Button>
+              <Link to="/login" className="text-blue-400 ">
+                <Button variant="contained" className="w-full !bg-yellow-500 !shadow-sm !p-2 !font-bold poppins-medium-sm">Login</Button>
               </Link>
           </form>
         </div>

@@ -29,17 +29,30 @@ const Navbar = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [signingUp, setSigningUp] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showSignupModal, setShowSignupModal] = useState(false); 
   const [open, setOpen] = React.useState(false);
+  const [loggingIn, setLoggingIn] = useState(false);
+  const [loginSuccess, setLoginSuccess] = useState(false);
+  const [loginError, setLoginError] = useState(null);
   const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const opening = Boolean(anchorEl);
+
+
+  const handleClose = () => {
+    setOpen(false);
+    setShowLoginModal(false); 
+    setShowSignupModal(false);
+  };
+
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
   const handlingClose = () => {
     setAnchorEl(null);
+    
   };
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -90,6 +103,42 @@ const Navbar = () => {
     },
   });
 
+  const { handleChange, handleSubmit, values, errors } = useFormik({
+    initialValues: {
+        email: "",
+        password: "",
+    },
+    validationSchema: userLoginSchema,
+    onSubmit: (values) => {
+        setLoggingIn(true);
+        axios.post(URL, values)
+            .then((result) => {
+                if (result.data.status === true && result.data.token) {
+                    localStorage.setItem("token", result.data.token);
+                    localStorage.setItem("firstName", result.data.user.firstName);
+                    localStorage.setItem("lastName", result.data.user.lastName);
+                    setLoginSuccess(true);
+                    setTimeout(() => {
+                        navigate("/user/dashboard");
+                    }, 3000);
+                } else {
+                    console.error("error")
+                }
+            }).catch((err) => {
+                console.error(err.response.data.message);
+                setLoginError(err.response.data.message);
+                setTimeout(() => {
+                    setLoginError(null);
+                }, 2000);
+            })
+            .finally(() => {
+                setTimeout(() => {
+                    setLoggingIn(false);
+                }, 3000);
+            });
+    }
+});
+
   let linkers = [
     {
       path: "/blog",
@@ -98,10 +147,6 @@ const Navbar = () => {
     {
       path: "/about",
       name: "About",
-    },
-    {
-      path: "/login",
-      name: "Login",
     },
   ];
 
@@ -137,7 +182,8 @@ const Navbar = () => {
               {link.name}
             </NavLink>
           ))}
-
+          
+         
           <Button variant="contained" onClick={handleOpen}>
             <p className="poppins-medium-sm">Get Started</p>
           </Button>
@@ -162,11 +208,12 @@ const Navbar = () => {
                 <Typography
                   id="transition-modal-title"
                   variant="h6"
-                  component="h2"
+                  component="h1"
+                  className="text-center !text-2xl !font-bold "
                 >
-                  Sign up
+                  {showSignupModal ? "Sign up" : "Login"}
                 </Typography>
-                <div className="px-5">
+                <div className="px-5 poppins-medium-sm">
                   {(errors.firstName ||
                     errors.lastName ||
                     errors.email ||
@@ -181,96 +228,132 @@ const Navbar = () => {
                     </Alert>
                   )}
                 </div>
-                <form onSubmit={handleSubmit} className="lg:p-5 px-2">
-                  <div className="border flex items-center bg-white p-2 mb-3 rounded-md outline-1 outline-slate-400">
-                    <input
-                      type="text"
-                      placeholder="First Name"
-                      onChange={handleChange}
-                      name="firstName"
-                      value={values.firstName}
-                      className="w-full outline-none text-black"
-                      autoFocus
-                    />
-                    <span class="material-symbols-outlined text-black">
-                      info
-                    </span>
-                  </div>
+                
+                <form onSubmit={handleSubmit} className="lg:p-5 px-2 poppins-medium-sm">
+                  {showSignupModal && (
+                    <>
+                      <div className="border flex items-center bg-white p-2 mb-3 rounded-md outline-1 outline-slate-400">
+                        <input
+                          type="text"
+                          placeholder="First Name"
+                          onChange={handleChange}
+                          name="firstName"
+                          value={values.firstName}
+                          className="w-full outline-none text-black"
+                          autoFocus
+                        />
+                        <span class="material-symbols-outlined text-black">
+                          info
+                        </span>
+                      </div>
 
-                  <div className="border flex items-center bg-white p-2 mb-3 rounded-md outline-1 outline-slate-400">
-                    <input
-                      type="text"
-                      placeholder="Last Name"
-                      onChange={handleChange}
-                      name="lastName"
-                      value={values.lastName}
-                      className="w-full outline-none text-black"
-                    />
-                    <span class="material-symbols-outlined text-black">
-                      info
-                    </span>
-                  </div>
+                      <div className="border flex items-center bg-white p-2 mb-3 rounded-md outline-1 outline-slate-400">
+                        <input
+                          type="text"
+                          placeholder="Last Name"
+                          onChange={handleChange}
+                          name="lastName"
+                          value={values.lastName}
+                          className="w-full outline-none text-black"
+                        />
+                        <span class="material-symbols-outlined text-black">
+                          info
+                        </span>
+                      </div>
 
-                  <div className="border flex items-center bg-white p-2 mb-3 rounded-md outline-1 outline-slate-400">
-                    <input
-                      type="email"
-                      placeholder="Email address"
-                      onChange={handleChange}
-                      name="email"
-                      value={values.email}
-                      className="w-full  text-black outline-none"
-                    />
-                    <span class="material-symbols-outlined text-black">
-                      mail
-                    </span>
-                  </div>
-                  <div className="border flex items-center bg-white p-2 mb-3 rounded-md outline-1 outline-slate-400">
-                    <input
-                      type={showPassword ? "text" : "password"}
-                      placeholder="Password"
-                      onChange={handleChange}
-                      name="password"
-                      value={values.password}
-                      className="w-full outline-none text-black"
-                    />
-                    <span
-                      className="material-symbols-outlined text-black cursor-pointer"
-                      onClick={togglePasswordVisibility}
-                    >
-                      {showPassword ? "visibility" : "visibility_off"}
-                    </span>
-                  </div>
-                  <div className="border flex items-center bg-white p-2 mb-3 rounded-md outline-1 outline-slate-400">
-                    <input
-                      type={showConfirmPassword ? "text" : "password"}
-                      placeholder="Confirm Password"
-                      onChange={handleChange}
-                      name="confirmPassword"
-                      value={values.confirmPassword}
-                      className="w-full outline-none text-black"
-                    />
-                    <span
-                      className="material-symbols-outlined text-black cursor-pointer"
-                      onClick={togglePasswordVisibilityConfirm}
-                    >
-                      {showConfirmPassword ? "visibility" : "visibility_off"}
-                    </span>
-                  </div>
-                  <button
-                    type="submit"
-                    className="w-full p-3 font-bold bg-blue-600 my-5 text-white rounded-md"
-                    disabled={signingUp}
-                  >
-                    {signingUp ? "Signing up..." : "Signup"}
-                  </button>
-                  <p className="text-center">
-                    you already have an account?{" "}
-                    <Link to="/user/login" className="text-blue-800">
-                      Login
-                    </Link>
-                  </p>
-                </form>
-               
+                      <div className="border flex items-center bg-white p-2 mb-3 rounded-md outline-1 outline-slate-400">
+                        <input
+                          type="email"
+                          placeholder="Email address"
+                          onChange={handleChange}
+                          name="email"
+                          value={values.email}
+                          className="w-full  text-black outline-none"
+                        />
+                        <span class="material-symbols-outlined text-black">
+                          mail
+                        </span>
+                      </div>
+                      <div className="border flex items-center bg-white p-2 mb-3 rounded-md outline-1 outline-slate-400">
+                        <input
+                          type={showPassword ? "text" : "password"}
+                          placeholder="Password"
+                          onChange={handleChange}
+                          name="password"
+                          value={values.password}
+                          className="w-full outline-none text-black"
+                        />
+                        <span
+                          className="material-symbols-outlined text-black cursor-pointer"
+                          onClick={togglePasswordVisibility}
+                        >
+                          {showPassword ? "visibility" : "visibility_off"}
+                        </span>
+                      </div>
+                      <div className="border flex items-center bg-white p-2 mb-3 rounded-md outline-1 outline-slate-400">
+                        <input
+                          type={showConfirmPassword ? "text" : "password"}
+                          placeholder="Confirm Password"
+                          onChange={handleChange}
+                          name="confirmPassword"
+                          value={values.confirmPassword}
+                          className="w-full outline-none text-black"
+                        />
+                        <span
+                          className="material-symbols-outlined text-black cursor-pointer"
+                          onClick={togglePasswordVisibilityConfirm}
+                        >
+                          {showConfirmPassword ? "visibility" : "visibility_off"}
+                        </span>
+                      </div>
+                      <button
+                        type="submit"
+                        className="w-full p-3 font-bold bg-blue-600 my-5 text-white rounded-md"
+                        disabled={signingUp}
+                      >
+                        {signingUp ? "Signing up..." : "Signup"}
+                      </button>
+                      <p className="text-center">
+                        Already have an account?{" "}
+                        <span
+                          className="poppins-medium-sm text-blue-600 cursor-pointer"
+                          onClick={() => { 
+                            setShowSignupModal(false); 
+                            setShowLoginModal(true); 
+                          }}
+                        >
+                          Login
+                        </span>
+                      </p>
+                    </>
+                  )}
+                   {!showSignupModal && (
+                  
+                     <>
+                            <div className="border flex items-center bg-white p-2 mb-3 rounded-md outline-1 outline-slate-400">
+                                <input type="email" placeholder='Email Address' onChange={handleChange} name="email" value={values.email} className="w-full bg-none outline-none text-black" autoFocus/>
+                                <span className="material-symbols-outlined text-black">
+                                    person
+                                </span>
+                            </div>
+                            <div className="border flex items-center bg-white p-2 mb-3 rounded-md outline-1 outline-slate-400">
+                                <input type={showPassword ? "text" : "password"} placeholder='Password' onChange={handleChange} name="password" value={values.password} className="w-full outline-none   text-black" />
+                                <span className="material-symbols-outlined text-black cursor-pointer" onClick={togglePasswordVisibility}>
+                                    {showPassword ? "visibility" : "visibility_off"}
+                                </span>
+                            </div>
+                            <button type="submit" className="p-3 text-white rounded w-full mb-3 font-bold bg-green-700">
+                                {loggingIn ? "Logging in..." : "Login"}
+                            </button>
+                            <p className="text-center">Don't have an account? <Link to='/user/register' className="text-gray-500 font-bold">Sign up</Link></p>
+                            <div className="w-full flex justify-center lg:py-2 py-5 text-green-600 font-bold">
+                                <Link to='/user/forgot'>forget password?</Link>
+                            </div>
+                     
+                     </>
+                     
+                   )}
+                   </form>
               </Box>
             </Fade>
           </Modal>
