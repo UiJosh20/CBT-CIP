@@ -9,10 +9,13 @@ import Button from "@mui/material/Button";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import { useFormik } from "formik";
+import { RegisterSchema } from "../schema/plannerSignup";
+import { useState } from "react";
 
 const style = {
   position: "absolute",
-  top: "40%",
+  top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
   width: 600,
@@ -23,6 +26,9 @@ const style = {
 };
 
 const Navbar = () => {
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [signingUp, setSigningUp] = useState(false);
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -35,6 +41,54 @@ const Navbar = () => {
   const handlingClose = () => {
     setAnchorEl(null);
   };
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+  const togglePasswordVisibilityConfirm = () => {
+    setShowConfirmPassword(!showConfirmPassword);
+  };
+  const initialValues = {
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  };
+
+  const { handleChange, handleSubmit, values, errors } = useFormik({
+    initialValues,
+    validationSchema: RegisterSchema,
+    onSubmit: (values) => {
+      setSigningUp(true);
+      if (values.password !== values.confirmPassword) {
+        {
+          errors.confirmPassword = "Password does not match";
+        }
+        setTimeout(() => {
+          setSigningUp(false);
+          errors.confirmPassword = "";
+        }, 2500);
+      } else {
+        axios
+          .post(URL, values)
+          .then((response) => {
+            if (response.data.status == 200) {
+              navigate("/user/verifyEmail");
+            } else {
+              navigate("/user/register");
+            }
+          })
+          .catch((error) => {
+            console.error("Registration failed:", error);
+          })
+          .finally(() => {
+            setTimeout(() => {
+              setSigningUp(false);
+            }, 3000);
+          });
+      }
+    },
+  });
 
   let linkers = [
     {
@@ -99,8 +153,11 @@ const Navbar = () => {
                 timeout: 500,
               },
             }}
+            className="lg:block hidden"
           >
-            <Fade in={open}>
+            <Fade in={open} 
+            
+            >
               <Box sx={style}>
                 <Typography
                   id="transition-modal-title"
@@ -109,7 +166,111 @@ const Navbar = () => {
                 >
                   Sign up
                 </Typography>
-                <input type="text" placeholder="Name" className="mt-5 p-2" />
+                <div className="px-5">
+                  {(errors.firstName ||
+                    errors.lastName ||
+                    errors.email ||
+                    errors.password ||
+                    errors.confirmPassword) && (
+                    <Alert sx={{ width: "100%" }} severity="warning">
+                      {errors.firstName ||
+                        errors.lastName ||
+                        errors.email ||
+                        errors.password ||
+                        errors.confirmPassword}
+                    </Alert>
+                  )}
+                </div>
+                <form onSubmit={handleSubmit} className="lg:p-5 px-2">
+                  <div className="border flex items-center bg-white p-2 mb-3 rounded-md outline-1 outline-slate-400">
+                    <input
+                      type="text"
+                      placeholder="First Name"
+                      onChange={handleChange}
+                      name="firstName"
+                      value={values.firstName}
+                      className="w-full outline-none text-black"
+                      autoFocus
+                    />
+                    <span class="material-symbols-outlined text-black">
+                      info
+                    </span>
+                  </div>
+
+                  <div className="border flex items-center bg-white p-2 mb-3 rounded-md outline-1 outline-slate-400">
+                    <input
+                      type="text"
+                      placeholder="Last Name"
+                      onChange={handleChange}
+                      name="lastName"
+                      value={values.lastName}
+                      className="w-full outline-none text-black"
+                    />
+                    <span class="material-symbols-outlined text-black">
+                      info
+                    </span>
+                  </div>
+
+                  <div className="border flex items-center bg-white p-2 mb-3 rounded-md outline-1 outline-slate-400">
+                    <input
+                      type="email"
+                      placeholder="Email address"
+                      onChange={handleChange}
+                      name="email"
+                      value={values.email}
+                      className="w-full  text-black outline-none"
+                    />
+                    <span class="material-symbols-outlined text-black">
+                      mail
+                    </span>
+                  </div>
+                  <div className="border flex items-center bg-white p-2 mb-3 rounded-md outline-1 outline-slate-400">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Password"
+                      onChange={handleChange}
+                      name="password"
+                      value={values.password}
+                      className="w-full outline-none text-black"
+                    />
+                    <span
+                      className="material-symbols-outlined text-black cursor-pointer"
+                      onClick={togglePasswordVisibility}
+                    >
+                      {showPassword ? "visibility" : "visibility_off"}
+                    </span>
+                  </div>
+                  <div className="border flex items-center bg-white p-2 mb-3 rounded-md outline-1 outline-slate-400">
+                    <input
+                      type={showConfirmPassword ? "text" : "password"}
+                      placeholder="Confirm Password"
+                      onChange={handleChange}
+                      name="confirmPassword"
+                      value={values.confirmPassword}
+                      className="w-full outline-none text-black"
+                    />
+                    <span
+                      className="material-symbols-outlined text-black cursor-pointer"
+                      onClick={togglePasswordVisibilityConfirm}
+                    >
+                      {showConfirmPassword ? "visibility" : "visibility_off"}
+                    </span>
+                  </div>
+                  <button
+                    type="submit"
+                    className="w-full p-3 font-bold bg-blue-600 my-5 text-white rounded-md"
+                    disabled={signingUp}
+                  >
+                    {signingUp ? "Signing up..." : "Signup"}
+                  </button>
+                  <p className="text-center">
+                    you already have an account?{" "}
+                    <Link to="/user/login" className="text-blue-800">
+                      Login
+                    </Link>
+                  </p>
+                </form>
+               
               </Box>
             </Fade>
           </Modal>
@@ -132,11 +293,11 @@ const Navbar = () => {
             "aria-labelledby": "basic-button",
           }}
         >
-          <Link to='/blog'>
-          <MenuItem onClick={handlingClose}>Blog</MenuItem>
+          <Link to="/blog">
+            <MenuItem onClick={handlingClose}>Blog</MenuItem>
           </Link>
           <Link to="/about">
-          <MenuItem onClick={handlingClose}>About</MenuItem>
+            <MenuItem onClick={handlingClose}>About</MenuItem>
           </Link>
           <MenuItem onClick={handlingClose}>Login</MenuItem>
         </Menu>
