@@ -103,41 +103,41 @@ const Navbar = () => {
     },
   });
 
-  const { handleChange, handleSubmit, values, errors } = useFormik({
-    initialValues: {
-        email: "",
-        password: "",
-    },
-    validationSchema: userLoginSchema,
-    onSubmit: (values) => {
-        setLoggingIn(true);
-        axios.post(URL, values)
-            .then((result) => {
-                if (result.data.status === true && result.data.token) {
-                    localStorage.setItem("token", result.data.token);
-                    localStorage.setItem("firstName", result.data.user.firstName);
-                    localStorage.setItem("lastName", result.data.user.lastName);
-                    setLoginSuccess(true);
-                    setTimeout(() => {
-                        navigate("/user/dashboard");
-                    }, 3000);
-                } else {
-                    console.error("error")
-                }
-            }).catch((err) => {
-                console.error(err.response.data.message);
-                setLoginError(err.response.data.message);
-                setTimeout(() => {
-                    setLoginError(null);
-                }, 2000);
-            })
-            .finally(() => {
-                setTimeout(() => {
-                    setLoggingIn(false);
-                }, 3000);
-            });
-    }
-});
+//   const { handleChange, handleSubmit, values, errors } = useFormik({
+//     initialValues: {
+//         email: "",
+//         password: "",
+//     },
+//     validationSchema: userLoginSchema,
+//     onSubmit: (values) => {
+//         setLoggingIn(true);
+//         axios.post(URL, values)
+//             .then((result) => {
+//                 if (result.data.status === true && result.data.token) {
+//                     localStorage.setItem("token", result.data.token);
+//                     localStorage.setItem("firstName", result.data.user.firstName);
+//                     localStorage.setItem("lastName", result.data.user.lastName);
+//                     setLoginSuccess(true);
+//                     setTimeout(() => {
+//                         navigate("/user/dashboard");
+//                     }, 3000);
+//                 } else {
+//                     console.error("error")
+//                 }
+//             }).catch((err) => {
+//                 console.error(err.response.data.message);
+//                 setLoginError(err.response.data.message);
+//                 setTimeout(() => {
+//                     setLoginError(null);
+//                 }, 2000);
+//             })
+//             .finally(() => {
+//                 setTimeout(() => {
+//                     setLoggingIn(false);
+//                 }, 3000);
+//             });
+//     }
+// });
 
   let linkers = [
     {
@@ -228,7 +228,6 @@ const Navbar = () => {
                     </Alert>
                   )}
                 </div>
-                
                 <form onSubmit={handleSubmit} className="lg:p-5 px-2 poppins-medium-sm">
                   {showSignupModal && (
                     <>
@@ -328,32 +327,60 @@ const Navbar = () => {
                     </>
                   )}
                    {!showSignupModal && (
-                  
-                     <>
-                            <div className="border flex items-center bg-white p-2 mb-3 rounded-md outline-1 outline-slate-400">
-                                <input type="email" placeholder='Email Address' onChange={handleChange} name="email" value={values.email} className="w-full bg-none outline-none text-black" autoFocus/>
-                                <span className="material-symbols-outlined text-black">
-                                    person
-                                </span>
-                            </div>
-                            <div className="border flex items-center bg-white p-2 mb-3 rounded-md outline-1 outline-slate-400">
-                                <input type={showPassword ? "text" : "password"} placeholder='Password' onChange={handleChange} name="password" value={values.password} className="w-full outline-none   text-black" />
-                                <span className="material-symbols-outlined text-black cursor-pointer" onClick={togglePasswordVisibility}>
-                                    {showPassword ? "visibility" : "visibility_off"}
-                                </span>
-                            </div>
-                            <button type="submit" className="p-3 text-white rounded w-full mb-3 font-bold bg-green-700">
-                                {loggingIn ? "Logging in..." : "Login"}
-                            </button>
-                            <p className="text-center">Don't have an account? <Link to='/user/register' className="text-gray-500 font-bold">Sign up</Link></p>
-                            <div className="w-full flex justify-center lg:py-2 py-5 text-green-600 font-bold">
-                                <Link to='/user/forgot'>forget password?</Link>
-                            </div>
+                    <>
+                      <div className="border flex items-center bg-white p-2 mb-3 rounded-md outline-1 outline-slate-400">
+                        <input
+                          type="email"
+                          placeholder="Email address"
+                          onChange={handleChange}
+                          name="email"
+                          value={values.email}
+                          className="w-full  text-black outline-none"
+                        />
+                        <span class="material-symbols-outlined text-black">
+                          mail
+                        </span>
+                      </div>
+                      <div className="border flex items-center bg-white p-2 mb-3 rounded-md outline-1 outline-slate-400">
+                        <input
+                          type={showPassword ? "text" : "password"}
+                          placeholder="Password"
+                          onChange={handleChange}
+                          name="password"
+                          value={values.password}
+                          className="w-full outline-none text-black"
+                        />
+                        <span
+                          className="material-symbols-outlined text-black cursor-pointer"
+                          onClick={togglePasswordVisibility}
+                        >
+                          {showPassword ? "visibility" : "visibility_off"}
+                        </span>
+                      </div>
                      
-                     </>
-                     
-                   )}
-                   </form>
+                      <button
+                        type="submit"
+                        className="w-full p-3 font-bold bg-blue-600 my-5 text-white rounded-md"
+                        disabled={signingUp}
+                      >
+                        {loggingIn ? "Logging in.." : "Login"}
+                      </button>
+                      <p className="text-center">
+                        You don't have an account?{" "}
+                        <span
+                          className="poppins-medium-sm text-blue-600 cursor-pointer"
+                          onClick={() => { 
+                            setShowSignupModal(true); 
+                            setShowLoginModal(false); 
+                          }}
+                        >
+                        Signup
+                        </span>
+                      </p>
+                    </>
+                  )}
+                </form>
+               
               </Box>
             </Fade>
           </Modal>
