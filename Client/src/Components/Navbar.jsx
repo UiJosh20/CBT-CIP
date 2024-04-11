@@ -38,6 +38,7 @@ const Navbar = () => {
   const [loggingIn, setLoggingIn] = useState(false);
   const [loginSuccess, setLoginSuccess] = useState(false);
   const [loginError, setLoginError] = useState(null);
+  const URL = "http://localhost:3000/register";
   const handleOpen = () => setOpen(true);
 
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -91,7 +92,7 @@ const Navbar = () => {
       } else {
       
 
-        axios.post('YOUR_SIGNUP_API_ENDPOINT', values)
+        axios.post(URL, values)
           .then((response) => {
             if (response.data.status === 200) {
               values.firstName = ""
@@ -123,7 +124,7 @@ const Navbar = () => {
     validationSchema: loginSchema,
     onSubmit: (values) => {
       setLoggingIn(true);
-      axios.post('YOUR_LOGIN_API_ENDPOINT', values)
+      axios.post(URL, values)
           .then((result) => {
               if (result.data.status === true && result.data.token) {
                   localStorage.setItem("token", result.data.token);
