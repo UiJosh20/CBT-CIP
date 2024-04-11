@@ -10,8 +10,11 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { useFormik } from "formik";
-import { RegisterSchema } from "../schema/plannerSignup";
+import {loginSchema} from "../schema/plannerLogin"
+import {RegisterSchema} from "../schema/plannerSignup"
 import { useState } from "react";
+import Alert from '@mui/material/Alert';
+import axios from "axios";
 
 const style = {
   position: "absolute",
@@ -60,35 +63,47 @@ const Navbar = () => {
   const togglePasswordVisibilityConfirm = () => {
     setShowConfirmPassword(!showConfirmPassword);
   };
-  const initialValues = {
+  
+  const initialValuesSignup = {
     firstName: "",
     lastName: "",
     email: "",
     password: "",
     confirmPassword: "",
   };
+  const initialValuesLogin = {
+    email: "",
+    password: "",
+  };
 
-  const { handleChange, handleSubmit, values, errors } = useFormik({
-    initialValues,
+  const { handleChange: handleChangeSignup, handleSubmit: handleSubmitSignup, values: valuesSignup, errors: errorsSignup } = useFormik({
+    initialValues: initialValuesSignup,
     validationSchema: RegisterSchema,
     onSubmit: (values) => {
       setSigningUp(true);
       if (values.password !== values.confirmPassword) {
-        {
-          errors.confirmPassword = "Password does not match";
-        }
+        errorsSignup.confirmPassword = "Password does not match";
         setTimeout(() => {
           setSigningUp(false);
-          errors.confirmPassword = "";
+          errorsSignup.confirmPassword = "";
+
         }, 2500);
       } else {
-        axios
-          .post(URL, values)
+      
+
+        axios.post('YOUR_SIGNUP_API_ENDPOINT', values)
           .then((response) => {
-            if (response.data.status == 200) {
-              navigate("/user/verifyEmail");
+            if (response.data.status === 200) {
+              values.firstName = ""
+              values.lastName = ""
+              values.email = ""
+              values.password = ""
+              values.confirmPassword = ""
+              setShowLoginModal(true);
+              setShowSignupModal(false);
             } else {
-              navigate("/user/register");
+              setShowLoginModal(false);
+              setShowSignupModal(true);
             }
           })
           .catch((error) => {
@@ -103,41 +118,38 @@ const Navbar = () => {
     },
   });
 
-//   const { handleChange, handleSubmit, values, errors } = useFormik({
-//     initialValues: {
-//         email: "",
-//         password: "",
-//     },
-//     validationSchema: userLoginSchema,
-//     onSubmit: (values) => {
-//         setLoggingIn(true);
-//         axios.post(URL, values)
-//             .then((result) => {
-//                 if (result.data.status === true && result.data.token) {
-//                     localStorage.setItem("token", result.data.token);
-//                     localStorage.setItem("firstName", result.data.user.firstName);
-//                     localStorage.setItem("lastName", result.data.user.lastName);
-//                     setLoginSuccess(true);
-//                     setTimeout(() => {
-//                         navigate("/user/dashboard");
-//                     }, 3000);
-//                 } else {
-//                     console.error("error")
-//                 }
-//             }).catch((err) => {
-//                 console.error(err.response.data.message);
-//                 setLoginError(err.response.data.message);
-//                 setTimeout(() => {
-//                     setLoginError(null);
-//                 }, 2000);
-//             })
-//             .finally(() => {
-//                 setTimeout(() => {
-//                     setLoggingIn(false);
-//                 }, 3000);
-//             });
-//     }
-// });
+  const { handleChange: handleChangeLogin, handleSubmit: handleSubmitLogin, values: valuesLogin, errors: errorsLogin } = useFormik({
+    initialValues: initialValuesLogin,
+    validationSchema: loginSchema,
+    onSubmit: (values) => {
+      setLoggingIn(true);
+      axios.post('YOUR_LOGIN_API_ENDPOINT', values)
+          .then((result) => {
+              if (result.data.status === true && result.data.token) {
+                  localStorage.setItem("token", result.data.token);
+                  localStorage.setItem("firstName", result.data.user.firstName);
+                  localStorage.setItem("lastName", result.data.user.lastName);
+                  setLoginSuccess(true);
+                  setTimeout(() => {
+                      navigate("/user/dashboard");
+                  }, 3000);
+              } else {
+                  console.error("error")
+              }
+          }).catch((err) => {
+              console.error(err.response.data.message);
+              setLoginError(err.response.data.message);
+              setTimeout(() => {
+                  setLoginError(null);
+              }, 2000);
+          })
+          .finally(() => {
+              setTimeout(() => {
+                  setLoggingIn(false);
+              }, 3000);
+          });
+    }
+  });
 
   let linkers = [
     {
@@ -213,31 +225,49 @@ const Navbar = () => {
                 >
                   {showSignupModal ? "Sign up" : "Login"}
                 </Typography>
+                {showSignupModal && (
+                  <>
                 <div className="px-5 poppins-medium-sm">
-                  {(errors.firstName ||
-                    errors.lastName ||
-                    errors.email ||
-                    errors.password ||
-                    errors.confirmPassword) && (
+                  {(errorsSignup.firstName ||
+                    errorsSignup.lastName ||
+                    errorsSignup.email ||
+                    errorsSignup.password ||
+                    errorsSignup.confirmPassword) && (
                     <Alert sx={{ width: "100%" }} severity="warning">
-                      {errors.firstName ||
-                        errors.lastName ||
-                        errors.email ||
-                        errors.password ||
-                        errors.confirmPassword}
+                      {errorsSignup.firstName ||
+                        errorsSignup.lastName ||
+                        errorsSignup.email ||
+                        errorsSignup.password ||
+                        errorsSignup.confirmPassword}
                     </Alert>
                   )}
                 </div>
-                <form onSubmit={handleSubmit} className="lg:p-5 px-2 poppins-medium-sm">
+                  </>)}
+                  {!showSignupModal && (
+                  <>
+                <div className="px-5 poppins-medium-sm">
+                  {(
+                    errorsLogin.email ||
+                    errorsLogin.password
+                    ) && (
+                    <Alert sx={{ width: "100%" }} severity="warning">
+                      {
+                        errorsLogin.email ||
+                        errorsLogin.password }
+                    </Alert>
+                  )}
+                </div>
+                  </>)}
+                <form onSubmit={showSignupModal ? handleSubmitSignup : handleSubmitLogin} className="lg:p-5 px-2 poppins-medium-sm">
                   {showSignupModal && (
                     <>
                       <div className="border flex items-center bg-white p-2 mb-3 rounded-md outline-1 outline-slate-400">
                         <input
                           type="text"
                           placeholder="First Name"
-                          onChange={handleChange}
+                          onChange={handleChangeSignup}
                           name="firstName"
-                          value={values.firstName}
+                          value={valuesSignup.firstName}
                           className="w-full outline-none text-black"
                           autoFocus
                         />
@@ -250,9 +280,9 @@ const Navbar = () => {
                         <input
                           type="text"
                           placeholder="Last Name"
-                          onChange={handleChange}
+                          onChange={handleChangeSignup}
                           name="lastName"
-                          value={values.lastName}
+                          value={valuesSignup.lastName}
                           className="w-full outline-none text-black"
                         />
                         <span class="material-symbols-outlined text-black">
@@ -264,9 +294,9 @@ const Navbar = () => {
                         <input
                           type="email"
                           placeholder="Email address"
-                          onChange={handleChange}
+                          onChange={handleChangeSignup}
                           name="email"
-                          value={values.email}
+                          value={valuesSignup.email}
                           className="w-full  text-black outline-none"
                         />
                         <span class="material-symbols-outlined text-black">
@@ -277,9 +307,9 @@ const Navbar = () => {
                         <input
                           type={showPassword ? "text" : "password"}
                           placeholder="Password"
-                          onChange={handleChange}
+                          onChange={handleChangeSignup}
                           name="password"
-                          value={values.password}
+                          value={valuesSignup.password}
                           className="w-full outline-none text-black"
                         />
                         <span
@@ -293,9 +323,9 @@ const Navbar = () => {
                         <input
                           type={showConfirmPassword ? "text" : "password"}
                           placeholder="Confirm Password"
-                          onChange={handleChange}
+                          onChange={handleChangeSignup}
                           name="confirmPassword"
-                          value={values.confirmPassword}
+                          value={valuesSignup.confirmPassword}
                           className="w-full outline-none text-black"
                         />
                         <span
@@ -332,9 +362,9 @@ const Navbar = () => {
                         <input
                           type="email"
                           placeholder="Email address"
-                          onChange={handleChange}
+                          onChange={handleChangeLogin}
                           name="email"
-                          value={values.email}
+                          value={valuesLogin.email}
                           className="w-full  text-black outline-none"
                         />
                         <span class="material-symbols-outlined text-black">
@@ -345,9 +375,9 @@ const Navbar = () => {
                         <input
                           type={showPassword ? "text" : "password"}
                           placeholder="Password"
-                          onChange={handleChange}
+                          onChange={handleChangeLogin}
                           name="password"
-                          value={values.password}
+                          value={valuesLogin.password}
                           className="w-full outline-none text-black"
                         />
                         <span
@@ -361,7 +391,7 @@ const Navbar = () => {
                       <button
                         type="submit"
                         className="w-full p-3 font-bold bg-blue-600 my-5 text-white rounded-md"
-                        disabled={signingUp}
+                        disabled={loggingIn}
                       >
                         {loggingIn ? "Logging in.." : "Login"}
                       </button>
