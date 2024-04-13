@@ -14,8 +14,14 @@ const generateOTP = () => {
 };
 
 const generateVerificationToken = () => {
-  return crypto.randomBytes(32).toString("hex");
+  return crypto.randomBytes(3).toString("hex");
 };
+
+
+const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
 
 
 // user sign up
@@ -23,8 +29,14 @@ const generateVerificationToken = () => {
 const register = (req, res) =>{
 const otp = generateOTP();
 const otpExpiration = new Date(Date.now() + 30 * 60 * 1000);
+const verificationToken = generateVerificationToken();
 const { email } = req.body;
-const users = new userModel({ ...req.body, otp, otpExpiration });
+if (!validateEmail(email)) {
+    console.log("Invalid email format");
+    res.send({ message: "Invalid email format" });
+  }
+
+const users = new userModel({ ...req.body, verificationToken, otp, otpExpiration });
 users
   .save()
   .then(() => {
@@ -43,7 +55,7 @@ users
 
 // send email verification to the user
 
-const sendVerificationToEmail = (email) => {
+const sendVerificationToEmail = (email, verificationToken) => {
     return new Promise((resolve, reject) => {
       const transporter = nodemailer.createTransport({
         service: "gmail",
@@ -57,7 +69,7 @@ const sendVerificationToEmail = (email) => {
         from: MAILEREMAIL,
         to: email,
         subject: "Verify your email address",
-        text: `Congratulations your email has been verified successfully`,
+        text: `Here is your email verification token ${verificationToken}`
       };
   
       transporter.sendMail(mailOptions, (error, info) => {

@@ -40,7 +40,6 @@ const styleMobile = {
   py: 4,
 };
 
-
 const Home = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -51,8 +50,9 @@ const Home = () => {
   const [loggingIn, setLoggingIn] = useState(false);
   const [loginSuccess, setLoginSuccess] = useState(false);
   const [loginError, setLoginError] = useState(null);
+  const [showTokenVerificationModal, setShowTokenVerificationModal] = useState(false);
   const SignupURL = "http://localhost:3000/register";
-  const LoginURL = "http://localhost:3000/login"
+  const LoginURL = "http://localhost:3000/login";
   const handleOpen = () => setOpen(true);
 
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -115,7 +115,10 @@ const Home = () => {
               values.email = "";
               values.password = "";
               values.confirmPassword = "";
-              setShowLoginModal(true);
+              loginSuccess()
+              setTimeout(()=>{
+                setShowTokenVerificationModal(true);
+              }, 3000)
               setShowSignupModal(false);
             } else {
               setShowLoginModal(false);
@@ -331,10 +334,16 @@ const Home = () => {
                       </div>
                       <button
                         type="submit"
-                        className="w-full p-3 font-bold bg-blue-600 my-5 text-white rounded-md"
+                        className={`w-full p-3 font-bold ${
+                          loginSuccess ? "bg-green-600" : "bg-blue-600"
+                        } my-5 text-white rounded-md`}
                         disabled={signingUp}
                       >
-                        {signingUp ? "Signing up..." : "Signup"}
+                        {signingUp
+                          ? "Signing up..."
+                          : loginSuccess
+                          ? "Signed in"
+                          : "Signup"}
                       </button>
                       <p className="text-center">
                         Already have an account?{" "}
@@ -384,10 +393,16 @@ const Home = () => {
 
                       <button
                         type="submit"
-                        className="w-full p-3 font-bold bg-blue-600 my-5 text-white rounded-md"
+                        className={`w-full p-3 font-bold ${
+                          loginSuccess ? "bg-green-600" : "bg-blue-600"
+                        } my-5 text-white rounded-md`}
                         disabled={loggingIn}
                       >
-                        {loggingIn ? "Logging in.." : "Login"}
+                        {loggingIn
+                          ? "Logging in..."
+                          : loginSuccess
+                          ? "Logged in"
+                          : "Login"}
                       </button>
                       <p className="text-center">
                         You don't have an account?{" "}
@@ -408,18 +423,16 @@ const Home = () => {
             </Fade>
           </Modal>
 
+          {/* modal signup and login for mobile screen */}
+          <Button
+            variant="contained"
+            className="!font-bold !lg:mt-5 !mt-20 hideBtn !p-4 w-full !bg-black"
+            onClick={handleOpen}
+          >
+            Get Started
+          </Button>
 
-        
-        {/* modal signup and login for mobile screen */}
-            <Button
-              variant="contained"
-              className="!font-bold !lg:mt-5 !mt-20 hideBtn !p-4 w-full !bg-black"
-              onClick={handleOpen}
-            >
-              Get Started
-            </Button>
-
-            <Modal
+          <Modal
             aria-labelledby="transition-modal-title"
             aria-describedby="transition-modal-description"
             open={open}
@@ -559,10 +572,16 @@ const Home = () => {
                       </div>
                       <button
                         type="submit"
-                        className="w-full p-3 font-bold bg-blue-600 my-5 text-white rounded-md"
+                        className={`w-full p-3 font-bold ${
+                          loginSuccess ? "bg-green-600" : "bg-blue-600"
+                        } my-5 text-white rounded-md`}
                         disabled={signingUp}
                       >
-                        {signingUp ? "Signing up..." : "Signup"}
+                        {signingUp
+                          ? "Signing up..."
+                          : loginSuccess
+                          ? "Signed in"
+                          : "Signup"}
                       </button>
                       <p className="text-center">
                         Already have an account?{" "}
@@ -612,10 +631,16 @@ const Home = () => {
 
                       <button
                         type="submit"
-                        className="w-full p-3 font-bold bg-blue-600 my-5 text-white rounded-md"
+                        className={`w-full p-3 font-bold ${
+                          loginSuccess ? "bg-green-600" : "bg-blue-600"
+                        } my-5 text-white rounded-md`}
                         disabled={loggingIn}
                       >
-                        {loggingIn ? "Logging in.." : "Login"}
+                        {loggingIn
+                          ? "Logging in..."
+                          : loginSuccess
+                          ? "Logged in"
+                          : "Login"}
                       </button>
                       <p className="text-center">
                         You don't have an account?{" "}
@@ -635,7 +660,6 @@ const Home = () => {
               </Box>
             </Fade>
           </Modal>
-     
         </div>
       </section>
       {/* <section className="custom-background"></section> */}
