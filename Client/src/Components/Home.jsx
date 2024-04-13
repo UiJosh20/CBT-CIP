@@ -52,6 +52,7 @@ const Home = () => {
   const [loggingIn, setLoggingIn] = useState(false);
   const [loginSuccess, setLoginSuccess] = useState(false);
   const [SignupSuccess, setSignupSuccess] = useState(false);
+  const [verifySuccess, setVerifySuccess] = useState(false);
   const [loginError, setLoginError] = useState(null);
   const [showTokenVerificationModal, setShowTokenVerificationModal] =
     useState(false);
@@ -200,7 +201,7 @@ const Home = () => {
         .post(verifyURL, values)
         .then((result) => {
           if (result.data.status === true) {
-            setLoginSuccess(true);
+            setVerifySuccess(true);
             setTimeout(() => {
               setShowLoginModal(true);
               setShowTokenVerificationModal(false);
@@ -287,7 +288,7 @@ const Home = () => {
                
                 <form
                   onSubmit={
-                    handleSubmitLogin
+                    handleSubmitSignup
                   }
                   className="lg:p-5 px-2 poppins-medium-sm"
                 >
@@ -560,15 +561,15 @@ const Home = () => {
                       <button
                         type="submit"
                         className={`w-full p-3 font-bold ${
-                          SignupSuccess ? "bg-green-600" : "bg-blue-600"
+                          verifySuccess ? "bg-green-600" : "bg-blue-600"
                         } my-5 text-white rounded-md`}
-                        disabled={signingUp}
+                        disabled={verifyingToken}
                       >
                         {signingUp
-                          ? "Signing up..."
-                          : SignupSuccess
-                          ? "Signed in"
-                          : "Signup"}
+                          ? "Verifying ..."
+                          : verifySuccess
+                          ? "Verified"
+                          : "verify email"}
                       </button>
                     </>
                   )}
