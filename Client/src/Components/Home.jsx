@@ -40,9 +40,6 @@ const styleMobile = {
   py: 4,
 };
 
-function rand() {
-  return Math.round(Math.random() * 20) - 10;
-}
 
 const Home = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -54,7 +51,8 @@ const Home = () => {
   const [loggingIn, setLoggingIn] = useState(false);
   const [loginSuccess, setLoginSuccess] = useState(false);
   const [loginError, setLoginError] = useState(null);
-  const URL = "http://localhost:3000/register";
+  const SignupURL = "http://localhost:3000/register";
+  const LoginURL = "http://localhost:3000/login"
   const handleOpen = () => setOpen(true);
 
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -109,7 +107,7 @@ const Home = () => {
         }, 2500);
       } else {
         axios
-          .post(URL, values)
+          .post(SignupURL, values)
           .then((response) => {
             if (response.data.status === 200) {
               values.firstName = "";
@@ -147,7 +145,7 @@ const Home = () => {
     onSubmit: (values) => {
       setLoggingIn(true);
       axios
-        .post(URL, values)
+        .post(LoginURL, values)
         .then((result) => {
           if (result.data.status === true && result.data.token) {
             localStorage.setItem("token", result.data.token);

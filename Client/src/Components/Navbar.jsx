@@ -38,7 +38,8 @@ const Navbar = () => {
   const [loggingIn, setLoggingIn] = useState(false);
   const [loginSuccess, setLoginSuccess] = useState(false);
   const [loginError, setLoginError] = useState(null);
-  const URL = "http://localhost:3000/register";
+  const SignupURL = "http://localhost:3000/register";
+  const LoginURL = "http://localhost:3000/login"
   const handleOpen = () => setOpen(true);
 
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -92,7 +93,7 @@ const Navbar = () => {
       } else {
       
 
-        axios.post(URL, values)
+        axios.post(SignupURL, values)
           .then((response) => {
             if (response.data.status === 200) {
               values.firstName = ""
@@ -124,7 +125,7 @@ const Navbar = () => {
     validationSchema: loginSchema,
     onSubmit: (values) => {
       setLoggingIn(true);
-      axios.post(URL, values)
+      axios.post(LoginURL, values)
           .then((result) => {
               if (result.data.status === true && result.data.token) {
                   localStorage.setItem("token", result.data.token);
