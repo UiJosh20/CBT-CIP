@@ -41,7 +41,7 @@ users
   .save()
   .then(() => {
     console.log("User saved successfully");
-    sendVerificationToEmail(email);
+    sendVerificationToEmail(email, verificationToken);
     res
       .status(201)
       .send({ message: "User registered successfully", status: 200 });

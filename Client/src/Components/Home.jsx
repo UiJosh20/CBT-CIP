@@ -565,7 +565,7 @@ const Home = () => {
                         } my-5 text-white rounded-md`}
                         disabled={verifyingToken}
                       >
-                        {signingUp
+                        {verifyingToken
                           ? "Verifying ..."
                           : verifySuccess
                           ? "Verified"
