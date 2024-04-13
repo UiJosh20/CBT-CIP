@@ -27,6 +27,22 @@ const style = {
   boxShadow: 24,
   p: 4,
 };
+const styleMobile = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 370,
+  borderRadius: "10px",
+  bgcolor: "background.paper",
+  boxShadow: 24,
+  px: 2,
+  py: 4,
+};
+
+function rand() {
+  return Math.round(Math.random() * 20) - 10;
+}
 
 const Home = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -393,14 +409,235 @@ const Home = () => {
               </Box>
             </Fade>
           </Modal>
-          <Link to="/login">
+
+
+        
+        {/* modal signup and login for mobile screen */}
             <Button
               variant="contained"
-              className="!font-bold !lg:mt-5 !mt-20 hideBtn !p-3 !bg-black"
+              className="!font-bold !lg:mt-5 !mt-20 hideBtn !p-4 w-full !bg-black"
+              onClick={handleOpen}
             >
               Get Started
             </Button>
-          </Link>
+
+            <Modal
+            aria-labelledby="transition-modal-title"
+            aria-describedby="transition-modal-description"
+            open={open}
+            onClose={handleClose}
+            closeAfterTransition
+            slots={{ backdrop: Backdrop }}
+            slotProps={{
+              backdrop: {
+                timeout: 500,
+              },
+            }}
+            className="lg:hidden block"
+          >
+            <Fade in={open}>
+              <Box sx={styleMobile}>
+                <Typography
+                  id="transition-modal-title"
+                  variant="h6"
+                  component="h1"
+                  className="text-center !text-2xl !font-bold "
+                >
+                  {showSignupModal ? "Sign up" : "Login"}
+                </Typography>
+                {showSignupModal && (
+                  <>
+                    <div className="px-5 poppins-medium-sm">
+                      {(errorsSignup.firstName ||
+                        errorsSignup.lastName ||
+                        errorsSignup.email ||
+                        errorsSignup.password ||
+                        errorsSignup.confirmPassword) && (
+                        <Alert sx={{ width: "100%" }} severity="warning">
+                          {errorsSignup.firstName ||
+                            errorsSignup.lastName ||
+                            errorsSignup.email ||
+                            errorsSignup.password ||
+                            errorsSignup.confirmPassword}
+                        </Alert>
+                      )}
+                    </div>
+                  </>
+                )}
+                {!showSignupModal && (
+                  <>
+                    <div className="px-5 poppins-medium-sm">
+                      {(errorsLogin.email || errorsLogin.password) && (
+                        <Alert sx={{ width: "100%" }} severity="warning">
+                          {errorsLogin.email || errorsLogin.password}
+                        </Alert>
+                      )}
+                    </div>
+                  </>
+                )}
+                <form
+                  onSubmit={
+                    showSignupModal ? handleSubmitSignup : handleSubmitLogin
+                  }
+                  className="lg:p-5 px-2 py-4 poppins-medium-sm"
+                >
+                  {showSignupModal && (
+                    <>
+                      <div className="border flex items-center bg-white p-2 mb-3 rounded-md outline-1 outline-slate-400">
+                        <input
+                          type="text"
+                          placeholder="First Name"
+                          onChange={handleChangeSignup}
+                          name="firstName"
+                          value={valuesSignup.firstName}
+                          className="w-full outline-none text-black"
+                          autoFocus
+                        />
+                        <span class="material-symbols-outlined text-black">
+                          info
+                        </span>
+                      </div>
+
+                      <div className="border flex items-center bg-white p-2 mb-3 rounded-md outline-1 outline-slate-400">
+                        <input
+                          type="text"
+                          placeholder="Last Name"
+                          onChange={handleChangeSignup}
+                          name="lastName"
+                          value={valuesSignup.lastName}
+                          className="w-full outline-none text-black"
+                        />
+                        <span class="material-symbols-outlined text-black">
+                          info
+                        </span>
+                      </div>
+
+                      <div className="border flex items-center bg-white p-2 mb-3 rounded-md outline-1 outline-slate-400">
+                        <input
+                          type="email"
+                          placeholder="Email address"
+                          onChange={handleChangeSignup}
+                          name="email"
+                          value={valuesSignup.email}
+                          className="w-full  text-black outline-none"
+                        />
+                        <span class="material-symbols-outlined text-black">
+                          mail
+                        </span>
+                      </div>
+                      <div className="border flex items-center bg-white p-2 mb-3 rounded-md outline-1 outline-slate-400">
+                        <input
+                          type={showPassword ? "text" : "password"}
+                          placeholder="Password"
+                          onChange={handleChangeSignup}
+                          name="password"
+                          value={valuesSignup.password}
+                          className="w-full outline-none text-black"
+                        />
+                        <span
+                          className="material-symbols-outlined text-black cursor-pointer"
+                          onClick={togglePasswordVisibility}
+                        >
+                          {showPassword ? "visibility" : "visibility_off"}
+                        </span>
+                      </div>
+                      <div className="border flex items-center bg-white p-2 mb-3 rounded-md outline-1 outline-slate-400">
+                        <input
+                          type={showConfirmPassword ? "text" : "password"}
+                          placeholder="Confirm Password"
+                          onChange={handleChangeSignup}
+                          name="confirmPassword"
+                          value={valuesSignup.confirmPassword}
+                          className="w-full outline-none text-black"
+                        />
+                        <span
+                          className="material-symbols-outlined text-black cursor-pointer"
+                          onClick={togglePasswordVisibilityConfirm}
+                        >
+                          {showConfirmPassword
+                            ? "visibility"
+                            : "visibility_off"}
+                        </span>
+                      </div>
+                      <button
+                        type="submit"
+                        className="w-full p-3 font-bold bg-blue-600 my-5 text-white rounded-md"
+                        disabled={signingUp}
+                      >
+                        {signingUp ? "Signing up..." : "Signup"}
+                      </button>
+                      <p className="text-center">
+                        Already have an account?{" "}
+                        <span
+                          className="poppins-medium-sm text-blue-600 cursor-pointer"
+                          onClick={() => {
+                            setShowSignupModal(false);
+                            setShowLoginModal(true);
+                          }}
+                        >
+                          Login
+                        </span>
+                      </p>
+                    </>
+                  )}
+                  {!showSignupModal && (
+                    <>
+                      <div className="border flex items-center bg-white p-2 mb-3 rounded-md outline-1 outline-slate-400">
+                        <input
+                          type="email"
+                          placeholder="Email address"
+                          onChange={handleChangeLogin}
+                          name="email"
+                          value={valuesLogin.email}
+                          className="w-full  text-black outline-none"
+                        />
+                        <span class="material-symbols-outlined text-black">
+                          mail
+                        </span>
+                      </div>
+                      <div className="border flex items-center bg-white p-2 mb-3 rounded-md outline-1 outline-slate-400">
+                        <input
+                          type={showPassword ? "text" : "password"}
+                          placeholder="Password"
+                          onChange={handleChangeLogin}
+                          name="password"
+                          value={valuesLogin.password}
+                          className="w-full outline-none text-black"
+                        />
+                        <span
+                          className="material-symbols-outlined text-black cursor-pointer"
+                          onClick={togglePasswordVisibility}
+                        >
+                          {showPassword ? "visibility" : "visibility_off"}
+                        </span>
+                      </div>
+
+                      <button
+                        type="submit"
+                        className="w-full p-3 font-bold bg-blue-600 my-5 text-white rounded-md"
+                        disabled={loggingIn}
+                      >
+                        {loggingIn ? "Logging in.." : "Login"}
+                      </button>
+                      <p className="text-center">
+                        You don't have an account?{" "}
+                        <span
+                          className="poppins-medium-sm text-blue-600 cursor-pointer"
+                          onClick={() => {
+                            setShowSignupModal(true);
+                            setShowLoginModal(false);
+                          }}
+                        >
+                          Signup
+                        </span>
+                      </p>
+                    </>
+                  )}
+                </form>
+              </Box>
+            </Fade>
+          </Modal>
+     
         </div>
       </section>
       {/* <section className="custom-background"></section> */}
