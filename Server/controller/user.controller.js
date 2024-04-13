@@ -4,7 +4,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const MAILEREMAIL = process.env.MAILEREMAIL;
-// const MAILERPASS = process.env.MAILERPASS;
+const MAILERPASS = process.env.MAILERPASS;
 const secret = process.env.SECRET;
 
 

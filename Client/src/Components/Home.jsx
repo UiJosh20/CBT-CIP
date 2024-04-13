@@ -15,6 +15,7 @@ import { loginSchema } from "../schema/plannerLogin";
 import { RegisterSchema } from "../schema/plannerSignup";
 import Alert from "@mui/material/Alert";
 import axios from "axios";
+import { verifyTokenSchema } from "../schema/tokenVerify";
 
 const style = {
   position: "absolute",
@@ -44,16 +45,23 @@ const Home = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [signingUp, setSigningUp] = useState(false);
+  const [verifyingToken, setVerifyingToken] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
   const [open, setOpen] = React.useState(false);
   const [loggingIn, setLoggingIn] = useState(false);
   const [loginSuccess, setLoginSuccess] = useState(false);
+  const [SignupSuccess, setSignupSuccess] = useState(false);
   const [loginError, setLoginError] = useState(null);
-  const [showTokenVerificationModal, setShowTokenVerificationModal] = useState(false);
+  const [showTokenVerificationModal, setShowTokenVerificationModal] =
+    useState(false);
   const SignupURL = "http://localhost:3000/register";
   const LoginURL = "http://localhost:3000/login";
-  const handleOpen = () => setOpen(true);
+  const handleOpen = () => {
+    setOpen(true);
+    setShowLoginModal(true);
+    setShowSignupModal(false);
+  }
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const opening = Boolean(anchorEl);
@@ -110,16 +118,17 @@ const Home = () => {
           .post(SignupURL, values)
           .then((response) => {
             if (response.data.status === 200) {
-              values.firstName = "";
-              values.lastName = "";
-              values.email = "";
-              values.password = "";
-              values.confirmPassword = "";
-              loginSuccess()
-              setTimeout(()=>{
+              setSignupSuccess(true);
+              setTimeout(() => {
+                values.firstName = "";
+                values.lastName = "";
+                values.email = "";
+                values.password = "";
+                values.confirmPassword = "";
                 setShowTokenVerificationModal(true);
-              }, 3000)
-              setShowSignupModal(false);
+                setShowSignupModal(false);
+                setShowLoginModal(false);
+              }, 3000);
             } else {
               setShowLoginModal(false);
               setShowSignupModal(true);
@@ -156,7 +165,45 @@ const Home = () => {
             localStorage.setItem("lastName", result.data.user.lastName);
             setLoginSuccess(true);
             setTimeout(() => {
+              setShowLoginModal(false);
               navigate("/user/dashboard");
+            }, 3000);
+          } else {
+            console.error("error");
+          }
+        })
+        .catch((err) => {
+          console.error(err.response.data.message);
+          setLoginError(err.response.data.message);
+          setTimeout(() => {
+            setLoginError(null);
+          }, 2000);
+        })
+        .finally(() => {
+          setTimeout(() => {
+            setLoggingIn(false);
+          }, 3000);
+        });
+    },
+  });
+
+  const {
+    handleChange: handleChangeTokenVerification,
+    handleSubmit: handleSubmitTokenVerification,
+    values: valuesTokenVerification,
+    errors: errorsTokenVerification,
+  } = useFormik({
+    initialValues: verifyTokenSchema,
+    onSubmit: (values) => {
+      setVerifyingToken(true);
+      axios
+        .post(verifyURL, values)
+        .then((result) => {
+          if (result.data.status === true) {
+            setLoginSuccess(true);
+            setTimeout(() => {
+              setShowLoginModal(true);
+              setShowTokenVerificationModal(false);
             }, 3000);
           } else {
             console.error("error");
@@ -197,7 +244,7 @@ const Home = () => {
           <Modal
             aria-labelledby="transition-modal-title"
             aria-describedby="transition-modal-description"
-            open={open}
+            open={showSignupModal}
             onClose={handleClose}
             closeAfterTransition
             slots={{ backdrop: Backdrop }}
@@ -208,7 +255,7 @@ const Home = () => {
             }}
             className="lg:block hidden"
           >
-            <Fade in={open}>
+            <Fade in={showSignupModal}>
               <Box sx={style}>
                 <Typography
                   id="transition-modal-title"
@@ -216,7 +263,7 @@ const Home = () => {
                   component="h1"
                   className="text-center !text-2xl !font-bold "
                 >
-                  {showSignupModal ? "Sign up" : "Login"}
+                  Signup
                 </Typography>
                 {showSignupModal && (
                   <>
@@ -237,20 +284,10 @@ const Home = () => {
                     </div>
                   </>
                 )}
-                {!showSignupModal && (
-                  <>
-                    <div className="px-5 poppins-medium-sm">
-                      {(errorsLogin.email || errorsLogin.password) && (
-                        <Alert sx={{ width: "100%" }} severity="warning">
-                          {errorsLogin.email || errorsLogin.password}
-                        </Alert>
-                      )}
-                    </div>
-                  </>
-                )}
+               
                 <form
                   onSubmit={
-                    showSignupModal ? handleSubmitSignup : handleSubmitLogin
+                    handleSubmitLogin
                   }
                   className="lg:p-5 px-2 poppins-medium-sm"
                 >
@@ -265,6 +302,7 @@ const Home = () => {
                           value={valuesSignup.firstName}
                           className="w-full outline-none text-black"
                           autoFocus
+                          disabled={signingUp}
                         />
                         <span class="material-symbols-outlined text-black">
                           info
@@ -279,6 +317,7 @@ const Home = () => {
                           name="lastName"
                           value={valuesSignup.lastName}
                           className="w-full outline-none text-black"
+                          disabled={signingUp}
                         />
                         <span class="material-symbols-outlined text-black">
                           info
@@ -293,6 +332,7 @@ const Home = () => {
                           name="email"
                           value={valuesSignup.email}
                           className="w-full  text-black outline-none"
+                          disabled={signingUp}
                         />
                         <span class="material-symbols-outlined text-black">
                           mail
@@ -306,6 +346,7 @@ const Home = () => {
                           name="password"
                           value={valuesSignup.password}
                           className="w-full outline-none text-black"
+                          disabled={signingUp}
                         />
                         <span
                           className="material-symbols-outlined text-black cursor-pointer"
@@ -321,6 +362,7 @@ const Home = () => {
                           onChange={handleChangeSignup}
                           name="confirmPassword"
                           value={valuesSignup.confirmPassword}
+                          disabled={signingUp}
                           className="w-full outline-none text-black"
                         />
                         <span
@@ -335,13 +377,13 @@ const Home = () => {
                       <button
                         type="submit"
                         className={`w-full p-3 font-bold ${
-                          loginSuccess ? "bg-green-600" : "bg-blue-600"
+                          SignupSuccess ? "bg-green-600" : "bg-blue-600"
                         } my-5 text-white rounded-md`}
                         disabled={signingUp}
                       >
                         {signingUp
                           ? "Signing up..."
-                          : loginSuccess
+                          : SignupSuccess
                           ? "Signed in"
                           : "Signup"}
                       </button>
@@ -350,8 +392,8 @@ const Home = () => {
                         <span
                           className="poppins-medium-sm text-blue-600 cursor-pointer"
                           onClick={() => {
-                            setShowSignupModal(false);
                             setShowLoginModal(true);
+                            setShowSignupModal(false);
                           }}
                         >
                           Login
@@ -359,7 +401,40 @@ const Home = () => {
                       </p>
                     </>
                   )}
-                  {!showSignupModal && (
+                </form>
+              </Box>
+            </Fade>
+          </Modal>
+
+          {/* login modal */}
+
+          <Modal
+            aria-labelledby="transition-modal-title"
+            aria-describedby="transition-modal-description"
+            open={showLoginModal}
+            onClose={handleClose}
+            closeAfterTransition
+            slots={{ backdrop: Backdrop }}
+            slotProps={{
+              backdrop: {
+                timeout: 500,
+              },
+            }}
+          >
+            <Fade in={showLoginModal}>
+              <Box sx={style}>
+                <Typography
+                  variant="h6"
+                  component="h1"
+                  className="text-center !text-2xl !font-bold"
+                >
+                  Login
+                </Typography>
+                <form
+                  onSubmit={handleSubmitLogin}
+                  className="lg:p-5 px-2 poppins-medium-sm"
+                >
+                  {showLoginModal && (
                     <>
                       <div className="border flex items-center bg-white p-2 mb-3 rounded-md outline-1 outline-slate-400">
                         <input
@@ -416,6 +491,85 @@ const Home = () => {
                           Signup
                         </span>
                       </p>
+                    </>
+                  )}
+                </form>
+              </Box>
+            </Fade>
+          </Modal>
+
+          {/* modal for email verification large screen */}
+
+          <Modal
+            aria-labelledby="transition-modal-title"
+            aria-describedby="transition-modal-description"
+            open={showTokenVerificationModal}
+            onClose={() => setShowTokenVerificationModal(false)}
+            closeAfterTransition
+            slots={{ backdrop: Backdrop }}
+            slotProps={{
+              backdrop: {
+                timeout: 500,
+              },
+            }}
+            className="lg:block hidden"
+          >
+            <Fade in={showTokenVerificationModal}>
+              <Box sx={style}>
+                <Typography
+                  variant="h6"
+                  component="h1"
+                  className="text-center font-bold"
+                >
+                  Verify Token
+                </Typography>
+                {showTokenVerificationModal && (
+                  <>
+                    <div className="px-5 poppins-medium-sm">
+                      {errorsTokenVerification.token && (
+                        <Alert sx={{ width: "100%" }} severity="warning">
+                          {errorsTokenVerification.token}
+                        </Alert>
+                      )}
+                    </div>
+                  </>
+                )}
+
+                <form
+                  onSubmit={handleSubmitTokenVerification}
+                  className="lg:p-5 px-2 poppins-medium-sm"
+                >
+                  {showTokenVerificationModal && (
+                    <>
+                      <div className="border flex items-center bg-white p-2 mb-3 rounded-md outline-1 outline-slate-400">
+                        <input
+                          type="text"
+                          placeholder="Verification token "
+                          onChange={handleChangeTokenVerification}
+                          name="firstName"
+                          value={valuesTokenVerification.token}
+                          className="w-full outline-none text-black"
+                          autoFocus
+                          disabled={verifyingToken}
+                        />
+                        <span class="material-symbols-outlined text-black">
+                          info
+                        </span>
+                      </div>
+
+                      <button
+                        type="submit"
+                        className={`w-full p-3 font-bold ${
+                          SignupSuccess ? "bg-green-600" : "bg-blue-600"
+                        } my-5 text-white rounded-md`}
+                        disabled={signingUp}
+                      >
+                        {signingUp
+                          ? "Signing up..."
+                          : SignupSuccess
+                          ? "Signed in"
+                          : "Signup"}
+                      </button>
                     </>
                   )}
                 </form>
@@ -662,7 +816,6 @@ const Home = () => {
           </Modal>
         </div>
       </section>
-      {/* <section className="custom-background"></section> */}
     </>
   );
 };
