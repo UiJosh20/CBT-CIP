@@ -92,16 +92,7 @@ const sendVerificationToEmail = (email, verificationToken) => {
       if (!user) {
         res.status(400).send({ message: "Invalid verification token" });
       }else{
-
-        user.verified = true
-        user.save()
-        .then(() => {
-          res.status(200).send({ message: "Email verified successfully", status: 200 });
-        })
-        .catch((error) => {
-          console.error("Error saving user:", error);
-          res.status(500).json({ message: "Internal Server Error" });
-        });
+        res.status(200).send({ message: "Email verified successfully", status: 200 });
       }
     })
   }
