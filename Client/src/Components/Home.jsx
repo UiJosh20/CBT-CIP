@@ -58,6 +58,7 @@ const Home = () => {
     useState(false);
   const SignupURL = "http://localhost:3000/register";
   const LoginURL = "http://localhost:3000/login";
+  const verifyURL = "http://localhost:3000/verifyToken";
   const handleOpen = () => {
     setOpen(true);
     setShowLoginModal(true);
@@ -65,19 +66,12 @@ const Home = () => {
   }
 
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const opening = Boolean(anchorEl);
+  
 
   const handleClose = () => {
     setOpen(false);
     setShowLoginModal(false);
     setShowSignupModal(false);
-  };
-
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handlingClose = () => {
-    setAnchorEl(null);
   };
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);

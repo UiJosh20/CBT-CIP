@@ -82,6 +82,29 @@ const sendVerificationToEmail = (email, verificationToken) => {
     });
   };
   
+  // verify email token
+
+  const verifyToken = (req, res) => {
+    let {verificationToken} = req.body
+
+    userModel.findOne({verificationToken})
+    .then((user) => {
+      if (!user) {
+        res.status(400).send({ message: "Invalid verification token" });
+      }else{
+
+        user.verified = true
+        user.save()
+        .then(() => {
+          res.status(200).send({ message: "Email verified successfully", status: 200 });
+        })
+        .catch((error) => {
+          console.error("Error saving user:", error);
+          res.status(500).json({ message: "Internal Server Error" });
+        });
+      }
+    })
+  }
 
 const login = (req, res) =>{
     console.log(req.body)
@@ -89,5 +112,6 @@ const login = (req, res) =>{
 
 module.exports = {
     register,
+    verifyToken,
     login,
 }
