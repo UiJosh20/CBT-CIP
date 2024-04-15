@@ -32,10 +32,10 @@
     font-style: normal;
   }
   .poppins-medium-sm {
-    font-family: "Poppins", sans-serif;
-    font-weight: 500;
-    font-style: normal;
-    font-size: 13px;
+    font-family: "Poppins", sans-serif  !important;
+    font-weight: 500 !important;
+    font-style: normal !important;
+    font-size: 13px !important;
   }
   
   .poppins-semibold {
