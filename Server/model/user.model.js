@@ -17,6 +17,7 @@ let userSchema = mongoose.Schema({
     email:{type: String, required: true, unique:true},
     password:{type: String, required: true},
     verificationToken:{type: String, unique: true},
+    verified: {type: Boolean, default: false},
     otp:{type: String, unique: true},
     otpExpiration:{
         type: Date

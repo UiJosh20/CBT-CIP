@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Button from "@mui/material/Button";
 import { useState } from "react";
 import * as React from "react";
@@ -54,6 +54,7 @@ const Home = () => {
   const [SignupSuccess, setSignupSuccess] = useState(false);
   const [verifySuccess, setVerifySuccess] = useState(false);
   const [loginError, setLoginError] = useState(null);
+  const navigate = useNavigate()
   const [showTokenVerificationModal, setShowTokenVerificationModal] =
     useState(false);
   const SignupURL = "http://localhost:3000/register";
@@ -194,7 +195,7 @@ const Home = () => {
       axios
         .post(verifyURL, values)
         .then((result) => {
-          if (result.data.status === true) {
+          if (result.data.status === 200) {
             setVerifySuccess(true);
             setTimeout(() => {
               setShowLoginModal(true);
@@ -229,348 +230,348 @@ const Home = () => {
             we automate your planning and save you time for other things
           </p>
 
-          <Button
-            variant="contained"
-            className="!font-bold !lg:mt-5 !mt-10 blueBtn"
-            onClick={handleOpen}
-          >
-            Get Started
-          </Button>
-          <Modal
-            aria-labelledby="transition-modal-title"
-            aria-describedby="transition-modal-description"
-            open={showSignupModal}
-            onClose={handleClose}
-            closeAfterTransition
-            slots={{ backdrop: Backdrop }}
-            slotProps={{
-              backdrop: {
-                timeout: 500,
-              },
-            }}
-            className="lg:block hidden"
-          >
-            <Fade in={showSignupModal}>
-              <Box sx={style}>
-                <Typography
-                  id="transition-modal-title"
-                  variant="h6"
-                  component="h1"
-                  className="text-center !text-2xl !font-bold "
-                >
-                  Signup
-                </Typography>
-                {showSignupModal && (
-                  <>
-                    <div className="px-5 poppins-medium-sm">
-                      {(errorsSignup.firstName ||
-                        errorsSignup.lastName ||
-                        errorsSignup.email ||
-                        errorsSignup.password ||
-                        errorsSignup.confirmPassword) && (
-                        <Alert sx={{ width: "100%" }} severity="warning">
-                          {errorsSignup.firstName ||
-                            errorsSignup.lastName ||
-                            errorsSignup.email ||
-                            errorsSignup.password ||
-                            errorsSignup.confirmPassword}
-                        </Alert>
-                      )}
-                    </div>
-                  </>
-                )}
-               
-                <form
-                  onSubmit={
-                    handleSubmitSignup
-                  }
-                  className="lg:p-5 px-2 poppins-medium-sm"
-                >
+            <Button
+              variant="contained"
+              className="!font-bold !lg:mt-5 !mt-10 blueBtn"
+              onClick={handleOpen}
+            >
+              Get Started
+            </Button>
+            <Modal
+              aria-labelledby="transition-modal-title"
+              aria-describedby="transition-modal-description"
+              open={showSignupModal}
+              onClose={handleClose}
+              closeAfterTransition
+              slots={{ backdrop: Backdrop }}
+              slotProps={{
+                backdrop: {
+                  timeout: 500,
+                },
+              }}
+              className="lg:block hidden"
+            >
+              <Fade in={showSignupModal}>
+                <Box sx={style}>
+                  <Typography
+                    id="transition-modal-title"
+                    variant="h6"
+                    component="h1"
+                    className="text-center !text-2xl !font-bold "
+                  >
+                    Signup
+                  </Typography>
                   {showSignupModal && (
                     <>
-                      <div className="border flex items-center bg-white p-2 mb-3 rounded-md outline-1 outline-slate-400">
-                        <input
-                          type="text"
-                          placeholder="First Name"
-                          onChange={handleChangeSignup}
-                          name="firstName"
-                          value={valuesSignup.firstName}
-                          className="w-full outline-none text-black"
-                          autoFocus
-                          disabled={signingUp}
-                        />
-                        <span class="material-symbols-outlined text-black">
-                          info
-                        </span>
+                      <div className="px-5 poppins-medium-sm">
+                        {(errorsSignup.firstName ||
+                          errorsSignup.lastName ||
+                          errorsSignup.email ||
+                          errorsSignup.password ||
+                          errorsSignup.confirmPassword) && (
+                          <Alert sx={{ width: "100%" }} severity="warning">
+                            {errorsSignup.firstName ||
+                              errorsSignup.lastName ||
+                              errorsSignup.email ||
+                              errorsSignup.password ||
+                              errorsSignup.confirmPassword}
+                          </Alert>
+                        )}
                       </div>
-
-                      <div className="border flex items-center bg-white p-2 mb-3 rounded-md outline-1 outline-slate-400">
-                        <input
-                          type="text"
-                          placeholder="Last Name"
-                          onChange={handleChangeSignup}
-                          name="lastName"
-                          value={valuesSignup.lastName}
-                          className="w-full outline-none text-black"
-                          disabled={signingUp}
-                        />
-                        <span class="material-symbols-outlined text-black">
-                          info
-                        </span>
-                      </div>
-
-                      <div className="border flex items-center bg-white p-2 mb-3 rounded-md outline-1 outline-slate-400">
-                        <input
-                          type="email"
-                          placeholder="Email address"
-                          onChange={handleChangeSignup}
-                          name="email"
-                          value={valuesSignup.email}
-                          className="w-full  text-black outline-none"
-                          disabled={signingUp}
-                        />
-                        <span class="material-symbols-outlined text-black">
-                          mail
-                        </span>
-                      </div>
-                      <div className="border flex items-center bg-white p-2 mb-3 rounded-md outline-1 outline-slate-400">
-                        <input
-                          type={showPassword ? "text" : "password"}
-                          placeholder="Password"
-                          onChange={handleChangeSignup}
-                          name="password"
-                          value={valuesSignup.password}
-                          className="w-full outline-none text-black"
-                          disabled={signingUp}
-                        />
-                        <span
-                          className="material-symbols-outlined text-black cursor-pointer"
-                          onClick={togglePasswordVisibility}
-                        >
-                          {showPassword ? "visibility" : "visibility_off"}
-                        </span>
-                      </div>
-                      <div className="border flex items-center bg-white p-2 mb-3 rounded-md outline-1 outline-slate-400">
-                        <input
-                          type={showConfirmPassword ? "text" : "password"}
-                          placeholder="Confirm Password"
-                          onChange={handleChangeSignup}
-                          name="confirmPassword"
-                          value={valuesSignup.confirmPassword}
-                          disabled={signingUp}
-                          className="w-full outline-none text-black"
-                        />
-                        <span
-                          className="material-symbols-outlined text-black cursor-pointer"
-                          onClick={togglePasswordVisibilityConfirm}
-                        >
-                          {showConfirmPassword
-                            ? "visibility"
-                            : "visibility_off"}
-                        </span>
-                      </div>
-                      <button
-                        type="submit"
-                        className={`w-full p-3 font-bold ${
-                          SignupSuccess ? "bg-green-600" : "bg-blue-600"
-                        } my-5 text-white rounded-md`}
-                        disabled={signingUp}
-                      >
-                        {signingUp
-                          ? "Signing up..."
-                          : SignupSuccess
-                          ? "Signed in"
-                          : "Signup"}
-                      </button>
-                      <p className="text-center">
-                        Already have an account?{" "}
-                        <span
-                          className="poppins-medium-sm text-blue-600 cursor-pointer"
-                          onClick={() => {
-                            setShowLoginModal(true);
-                            setShowSignupModal(false);
-                          }}
-                        >
-                          Login
-                        </span>
-                      </p>
                     </>
                   )}
-                </form>
-              </Box>
-            </Fade>
-          </Modal>
+                
+                  <form
+                    onSubmit={
+                      handleSubmitSignup
+                    }
+                    className="lg:p-5 px-2 poppins-medium-sm"
+                  >
+                    {showSignupModal && (
+                      <>
+                        <div className="border flex items-center bg-white p-2 mb-3 rounded-md outline-1 outline-slate-400">
+                          <input
+                            type="text"
+                            placeholder="First Name"
+                            onChange={handleChangeSignup}
+                            name="firstName"
+                            value={valuesSignup.firstName}
+                            className="w-full outline-none text-black"
+                            autoFocus
+                            disabled={signingUp}
+                          />
+                          <span class="material-symbols-outlined text-black">
+                            info
+                          </span>
+                        </div>
 
-          {/* login modal */}
+                        <div className="border flex items-center bg-white p-2 mb-3 rounded-md outline-1 outline-slate-400">
+                          <input
+                            type="text"
+                            placeholder="Last Name"
+                            onChange={handleChangeSignup}
+                            name="lastName"
+                            value={valuesSignup.lastName}
+                            className="w-full outline-none text-black"
+                            disabled={signingUp}
+                          />
+                          <span class="material-symbols-outlined text-black">
+                            info
+                          </span>
+                        </div>
 
-          <Modal
-            aria-labelledby="transition-modal-title"
-            aria-describedby="transition-modal-description"
-            open={showLoginModal}
-            onClose={handleClose}
-            closeAfterTransition
-            slots={{ backdrop: Backdrop }}
-            slotProps={{
-              backdrop: {
-                timeout: 500,
-              },
-            }}
-          >
-            <Fade in={showLoginModal}>
-              <Box sx={style}>
-                <Typography
-                  variant="h6"
-                  component="h1"
-                  className="text-center !text-2xl !font-bold"
-                >
-                  Login
-                </Typography>
-                <form
-                  onSubmit={handleSubmitLogin}
-                  className="lg:p-5 px-2 poppins-medium-sm"
-                >
-                  {showLoginModal && (
-                    <>
-                      <div className="border flex items-center bg-white p-2 mb-3 rounded-md outline-1 outline-slate-400">
-                        <input
-                          type="email"
-                          placeholder="Email address"
-                          onChange={handleChangeLogin}
-                          name="email"
-                          value={valuesLogin.email}
-                          className="w-full  text-black outline-none"
-                        />
-                        <span class="material-symbols-outlined text-black">
-                          mail
-                        </span>
-                      </div>
-                      <div className="border flex items-center bg-white p-2 mb-3 rounded-md outline-1 outline-slate-400">
-                        <input
-                          type={showPassword ? "text" : "password"}
-                          placeholder="Password"
-                          onChange={handleChangeLogin}
-                          name="password"
-                          value={valuesLogin.password}
-                          className="w-full outline-none text-black"
-                        />
-                        <span
-                          className="material-symbols-outlined text-black cursor-pointer"
-                          onClick={togglePasswordVisibility}
+                        <div className="border flex items-center bg-white p-2 mb-3 rounded-md outline-1 outline-slate-400">
+                          <input
+                            type="email"
+                            placeholder="Email address"
+                            onChange={handleChangeSignup}
+                            name="email"
+                            value={valuesSignup.email}
+                            className="w-full  text-black outline-none"
+                            disabled={signingUp}
+                          />
+                          <span class="material-symbols-outlined text-black">
+                            mail
+                          </span>
+                        </div>
+                        <div className="border flex items-center bg-white p-2 mb-3 rounded-md outline-1 outline-slate-400">
+                          <input
+                            type={showPassword ? "text" : "password"}
+                            placeholder="Password"
+                            onChange={handleChangeSignup}
+                            name="password"
+                            value={valuesSignup.password}
+                            className="w-full outline-none text-black"
+                            disabled={signingUp}
+                          />
+                          <span
+                            className="material-symbols-outlined text-black cursor-pointer"
+                            onClick={togglePasswordVisibility}
+                          >
+                            {showPassword ? "visibility" : "visibility_off"}
+                          </span>
+                        </div>
+                        <div className="border flex items-center bg-white p-2 mb-3 rounded-md outline-1 outline-slate-400">
+                          <input
+                            type={showConfirmPassword ? "text" : "password"}
+                            placeholder="Confirm Password"
+                            onChange={handleChangeSignup}
+                            name="confirmPassword"
+                            value={valuesSignup.confirmPassword}
+                            disabled={signingUp}
+                            className="w-full outline-none text-black"
+                          />
+                          <span
+                            className="material-symbols-outlined text-black cursor-pointer"
+                            onClick={togglePasswordVisibilityConfirm}
+                          >
+                            {showConfirmPassword
+                              ? "visibility"
+                              : "visibility_off"}
+                          </span>
+                        </div>
+                        <button
+                          type="submit"
+                          className={`w-full p-3 font-bold ${
+                            SignupSuccess ? "bg-green-600" : "bg-blue-600"
+                          } my-5 text-white rounded-md`}
+                          disabled={signingUp}
                         >
-                          {showPassword ? "visibility" : "visibility_off"}
-                        </span>
-                      </div>
+                          {signingUp
+                            ? "Signing up..."
+                            : SignupSuccess
+                            ? "Signed in"
+                            : "Signup"}
+                        </button>
+                        <p className="text-center">
+                          Already have an account?{" "}
+                          <span
+                            className="poppins-medium-sm text-blue-600 cursor-pointer"
+                            onClick={() => {
+                              setShowLoginModal(true);
+                              setShowSignupModal(false);
+                            }}
+                          >
+                            Login
+                          </span>
+                        </p>
+                      </>
+                    )}
+                  </form>
+                </Box>
+              </Fade>
+            </Modal>
 
-                      <button
-                        type="submit"
-                        className={`w-full p-3 font-bold ${
-                          loginSuccess ? "bg-green-600" : "bg-blue-600"
-                        } my-5 text-white rounded-md`}
-                        disabled={loggingIn}
-                      >
-                        {loggingIn
-                          ? "Logging in..."
-                          : loginSuccess
-                          ? "Logged in"
-                          : "Login"}
-                      </button>
-                      <p className="text-center">
-                        You don't have an account?{" "}
-                        <span
-                          className="poppins-medium-sm text-blue-600 cursor-pointer"
-                          onClick={() => {
-                            setShowSignupModal(true);
-                            setShowLoginModal(false);
-                          }}
+            {/* login modal */}
+
+            <Modal
+              aria-labelledby="transition-modal-title"
+              aria-describedby="transition-modal-description"
+              open={showLoginModal}
+              onClose={handleClose}
+              closeAfterTransition
+              slots={{ backdrop: Backdrop }}
+              slotProps={{
+                backdrop: {
+                  timeout: 500,
+                },
+              }}
+            >
+              <Fade in={showLoginModal}>
+                <Box sx={style}>
+                  <Typography
+                    variant="h6"
+                    component="h1"
+                    className="text-center !text-2xl !font-bold"
+                  >
+                    Login
+                  </Typography>
+                  <form
+                    onSubmit={handleSubmitLogin}
+                    className="lg:p-5 px-2 poppins-medium-sm"
+                  >
+                    {showLoginModal && (
+                      <>
+                        <div className="border flex items-center bg-white p-2 mb-3 rounded-md outline-1 outline-slate-400">
+                          <input
+                            type="email"
+                            placeholder="Email address"
+                            onChange={handleChangeLogin}
+                            name="email"
+                            value={valuesLogin.email}
+                            className="w-full  text-black outline-none"
+                          />
+                          <span class="material-symbols-outlined text-black">
+                            mail
+                          </span>
+                        </div>
+                        <div className="border flex items-center bg-white p-2 mb-3 rounded-md outline-1 outline-slate-400">
+                          <input
+                            type={showPassword ? "text" : "password"}
+                            placeholder="Password"
+                            onChange={handleChangeLogin}
+                            name="password"
+                            value={valuesLogin.password}
+                            className="w-full outline-none text-black"
+                          />
+                          <span
+                            className="material-symbols-outlined text-black cursor-pointer"
+                            onClick={togglePasswordVisibility}
+                          >
+                            {showPassword ? "visibility" : "visibility_off"}
+                          </span>
+                        </div>
+
+                        <button
+                          type="submit"
+                          className={`w-full p-3 font-bold ${
+                            loginSuccess ? "bg-green-600" : "bg-blue-600"
+                          } my-5 text-white rounded-md`}
+                          disabled={loggingIn}
                         >
-                          Signup
-                        </span>
-                      </p>
-                    </>
-                  )}
-                </form>
-              </Box>
-            </Fade>
-          </Modal>
+                          {loggingIn
+                            ? "Logging in..."
+                            : loginSuccess
+                            ? "Logged in"
+                            : "Login"}
+                        </button>
+                        <p className="text-center">
+                          You don't have an account?{" "}
+                          <span
+                            className="poppins-medium-sm text-blue-600 cursor-pointer"
+                            onClick={() => {
+                              setShowSignupModal(true);
+                              setShowLoginModal(false);
+                            }}
+                          >
+                            Signup
+                          </span>
+                        </p>
+                      </>
+                    )}
+                  </form>
+                </Box>
+              </Fade>
+            </Modal>
 
-          {/* modal for email verification large screen */}
+            {/* modal for email verification large screen */}
 
-          <Modal
-            aria-labelledby="transition-modal-title"
-            aria-describedby="transition-modal-description"
-            open={showTokenVerificationModal}
-            onClose={() => setShowTokenVerificationModal(false)}
-            closeAfterTransition
-            slots={{ backdrop: Backdrop }}
-            slotProps={{
-              backdrop: {
-                timeout: 500,
-              },
-            }}
-            className="lg:block hidden"
-          >
-            <Fade in={showTokenVerificationModal}>
-              <Box sx={style}>
-                <Typography
-                  variant="h6"
-                  component="h1"
-                  className="text-center font-bold"
-                >
-                  Verify Token
-                </Typography>
-                {showTokenVerificationModal && (
-                  <>
-                    <div className="px-5 poppins-medium-sm">
-                      {errorsTokenVerification.token && (
-                        <Alert sx={{ width: "100%" }} severity="warning">
-                          {errorsTokenVerification.token}
-                        </Alert>
-                      )}
-                    </div>
-                  </>
-                )}
-
-                <form
-                  onSubmit={handleSubmitTokenVerification}
-                  className="lg:p-5 px-2 poppins-medium-sm"
-                >
+            <Modal
+              aria-labelledby="transition-modal-title"
+              aria-describedby="transition-modal-description"
+              open={showTokenVerificationModal}
+              onClose={() => setShowTokenVerificationModal(false)}
+              closeAfterTransition
+              slots={{ backdrop: Backdrop }}
+              slotProps={{
+                backdrop: {
+                  timeout: 500,
+                },
+              }}
+              className="lg:block hidden"
+            >
+              <Fade in={showTokenVerificationModal}>
+                <Box sx={style}>
+                  <Typography
+                    variant="h6"
+                    component="h1"
+                    className="text-center font-bold"
+                  >
+                    Verify Token
+                  </Typography>
                   {showTokenVerificationModal && (
                     <>
-                      <div className="border flex items-center bg-white p-2 mb-3 rounded-md outline-1 outline-slate-400">
-                        <input
-                          type="text"
-                          placeholder="Verification token "
-                          onChange={handleChangeTokenVerification}
-                          name="firstName"
-                          value={valuesTokenVerification.token}
-                          className="w-full outline-none text-black"
-                          autoFocus
-                          disabled={verifyingToken}
-                        />
-                        <span class="material-symbols-outlined text-black">
-                          info
-                        </span>
+                      <div className="px-5 poppins-medium-sm">
+                        {errorsTokenVerification.token && (
+                          <Alert sx={{ width: "100%" }} severity="warning">
+                            {errorsTokenVerification.token}
+                          </Alert>
+                        )}
                       </div>
-
-                      <button
-                        type="submit"
-                        className={`w-full p-3 font-bold ${
-                          verifySuccess ? "bg-green-600" : "bg-blue-600"
-                        } my-5 text-white rounded-md`}
-                        disabled={verifyingToken}
-                      >
-                        {verifyingToken
-                          ? "Verifying ..."
-                          : verifySuccess
-                          ? "Verified"
-                          : "verify email"}
-                      </button>
                     </>
                   )}
-                </form>
-              </Box>
-            </Fade>
-          </Modal>
+
+                  <form
+                    onSubmit={handleSubmitTokenVerification}
+                    className="lg:p-5 px-2 poppins-medium-sm"
+                  >
+                    {showTokenVerificationModal && (
+                      <>
+                        <div className="border flex items-center bg-white p-2 mb-3 rounded-md outline-1 outline-slate-400">
+                          <input
+                            type="text"
+                            placeholder="Verification token "
+                            onChange={handleChangeTokenVerification}
+                            name="verificationToken"
+                            value={valuesTokenVerification.token}
+                            className="w-full outline-none text-black"
+                            autoFocus
+                            disabled={verifyingToken}
+                          />
+                          <span class="material-symbols-outlined text-black">
+                            info
+                          </span>
+                        </div>
+
+                        <button
+                          type="submit"
+                          className={`w-full p-3 font-bold ${
+                            verifySuccess ? "bg-green-600" : "bg-blue-600"
+                          } my-5 text-white rounded-md`}
+                          disabled={verifyingToken}
+                        >
+                          {verifyingToken
+                            ? "Verifying ..."
+                            : verifySuccess
+                            ? "Verified"
+                            : "verify email"}
+                        </button>
+                      </>
+                    )}
+                  </form>
+                </Box>
+              </Fade>
+            </Modal>
 
           {/* modal signup and login for mobile screen */}
           <Button
