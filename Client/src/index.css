@@ -152,6 +152,31 @@
     display: block !important;
   }
 
+  .noEvents{
+    font-size: 20px;
+    color: rgba(179, 179, 179, 0.377);
+  }
+  .w96{
+    width: 90%;
+  }
+
+  .firstEvent{
+    background-image: url("https://res.cloudinary.com/dubaep0qz/image/upload/v1713274659/360event/svi1g9cbc11tohk1eadp.jpg");
+    background-size: cover;
+    height: 200px;
+  }
+
+  .secondEvent{
+    background-image: url("https://res.cloudinary.com/dubaep0qz/image/upload/v1713274657/360event/simeg9t7jcevug4udxks.jpg");
+    background-size: cover;
+    height: 200px;
+  }
+
+  .thirdEvent{
+    background-image: url("https://res.cloudinary.com/dubaep0qz/image/upload/v1713276025/360event/vg3zilqc7nppdlchhnq6.jpg");
+    background-size: cover;
+    height: 200px;
+  }
   @media screen and (max-width: 480px) {
     .custom-color{
       background-color: #ffd900;
