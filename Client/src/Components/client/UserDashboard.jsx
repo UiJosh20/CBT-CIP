@@ -2,6 +2,7 @@ import * as React from "react";
 import { Divider, Steps, TimePicker } from 'antd';
 import { Button, Modal, Input, Select, Space , DatePicker, } from 'antd';
 import { useState } from "react";
+import { PlusCircleFilled } from "@ant-design/icons";
 const customDot = (dot, { status, index }) => (
   <Popover
     content={
@@ -54,8 +55,8 @@ const UserDashboard = () => {
       <section className="px-2 h-screen">
         <main className="bg-white px-5 py-10 lg:w-full flex justify-center mt-5">
 
-          <Button className="bg-blue-700" type="primary" onClick={showModal}>
-        Create event
+          <Button className="bg-blue-700 flex items-center gap-2" type="primary" onClick={showModal}>
+        Create event <PlusCircleFilled  />
       </Button>
       <Modal
         title="Creating a New Event"
@@ -77,12 +78,12 @@ const UserDashboard = () => {
         title: 'COnfirming event details',
       },
       {
-        title: 'Waiting',
+        title: 'Create',
       },
     ]}
   />
   <div className="flex items-center justify-center gap-5 mt-5">
-  <Input placeholder="Event Theme" ></Input>
+  <Input placeholder="Event Title" ></Input>
   <Space wrap>
     <Select
       defaultValue="Event type"
@@ -128,6 +129,58 @@ const UserDashboard = () => {
   <Space direction="vertical" size={12}>
     <TimePicker onChange={onChange}  needConfirm={true}  className="w-53 mx-4"/>
   </Space>
+
+  <Space wrap>
+  <Select
+  defaultValue="State"
+  style={{ width: 170 }}
+  onChange={handleChange}
+  options={[
+    { value: 'Abia', label: 'Abia' },
+    { value: 'Adamawa', label: 'Adamawa' },
+    { value: 'Akwa Ibom', label: 'Akwa Ibom' },
+    { value: 'Anambra', label: 'Anambra' },
+    { value: 'Bauchi', label: 'Bauchi' },
+    { value: 'Bayelsa', label: 'Bayelsa' },
+    { value: 'Benue', label: 'Benue' },
+    { value: 'Borno', label: 'Borno' },
+    { value: 'Cross River', label: 'Cross River' },
+    { value: 'Delta', label: 'Delta' },
+    { value: 'Ebonyi', label: 'Ebonyi' },
+    { value: 'Edo', label: 'Edo' },
+    { value: 'Ekiti', label: 'Ekiti' },
+    { value: 'Enugu', label: 'Enugu' },
+    { value: 'FCT', label: 'Federal Capital Territory' },
+    { value: 'Gombe', label: 'Gombe' },
+    { value: 'Imo', label: 'Imo' },
+    { value: 'Jigawa', label: 'Jigawa' },
+    { value: 'Kaduna', label: 'Kaduna' },
+    { value: 'Kano', label: 'Kano' },
+    { value: 'Katsina', label: 'Katsina' },
+    { value: 'Kebbi', label: 'Kebbi' },
+    { value: 'Kogi', label: 'Kogi' },
+    { value: 'Kwara', label: 'Kwara' },
+    { value: 'Lagos', label: 'Lagos' },
+    { value: 'Nasarawa', label: 'Nasarawa' },
+    { value: 'Niger', label: 'Niger' },
+    { value: 'Ogun', label: 'Ogun' },
+    { value: 'Ondo', label: 'Ondo' },
+    { value: 'Osun', label: 'Osun' },
+    { value: 'Oyo', label: 'Oyo' },
+    { value: 'Plateau', label: 'Plateau' },
+    { value: 'Rivers', label: 'Rivers' },
+    { value: 'Sokoto', label: 'Sokoto' },
+    { value: 'Taraba', label: 'Taraba' },
+    { value: 'Yobe', label: 'Yobe' },
+    { value: 'Zamfara', label: 'Zamfara' },
+  ]}
+/>
+  </Space>
+  <div className="my-4">
+    <Input type="text" placeholder="Venue address" className="p-2"/>
+
+    
+  </div>
   
   </div>
 
