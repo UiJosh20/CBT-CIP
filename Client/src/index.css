@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+*{
+  font-family: "Poppins", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
 .poppins-thin {
     font-family: "Poppins", sans-serif;
     font-weight: 100;
@@ -157,7 +163,7 @@
     color: rgba(179, 179, 179, 0.377);
   }
   .w96{
-    width: 90%;
+    width: 50% !important;
   }
 
   .firstEvent{
