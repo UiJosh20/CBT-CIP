@@ -3,6 +3,7 @@ import { Divider, Steps, TimePicker } from "antd";
 import { Button, Modal, Input, Select, Space, DatePicker } from "antd";
 import { useState } from "react";
 import { PlusCircleFilled } from "@ant-design/icons";
+import FormItemLabel from "antd/es/form/FormItemLabel";
 const customDot = (dot, { status, index }) => (
   <Popover
     content={
@@ -36,8 +37,18 @@ const UserDashboard = () => {
       setConfirmLoading(false);
     }, 2000);
   };
+
   const handleCancel = () => {
-    setCurrentStep(currentStep - 1);
+    setOpen(false);
+  }
+  const handlePrev = () => {
+    if (currentStep === 0){
+      setCurrentStep(0)
+    }
+    else{
+      setCurrentStep(currentStep - 1);
+
+    }
   };
 
   const handleChange = (value) => {
@@ -148,6 +159,11 @@ const UserDashboard = () => {
         <div className="my-4">
           <Input type="text" placeholder="Venue address" className="p-2" />
         </div>
+
+        <div className="my-4">
+          
+          <Input type="file"  className="p-2" />
+        </div>
       </div>
     </div>,
 
@@ -161,7 +177,7 @@ const UserDashboard = () => {
       <section className="px-2 h-screen">
         <main className="bg-white px-5 py-10 lg:w-full flex justify-center mt-5">
           <Button
-            className="bg-blue-700 flex items-center gap-2"
+            className="bg-blue-500 flex items-center gap-2"
             type="primary"
             onClick={showModal}
           >
@@ -170,11 +186,16 @@ const UserDashboard = () => {
           <Modal
             title="Creating a New Event"
             className="w96"
-            okType=""
             open={open}
-            onOk={handleOk}
             confirmLoading={confirmLoading}
             onCancel={handleCancel}
+            footer={[
+              <div className="flex justify-between mt-4">
+              <Button onClick={handlePrev}>Previous</Button>
+              <Button onClick={handleCancel}>Cancel</Button>
+              <Button onClick={handleOk}>Proceed</Button>
+            </div>
+           ]}
           >
             <Steps
               size="small"
@@ -193,6 +214,8 @@ const UserDashboard = () => {
             />
 
             {stepsContent[currentStep]}
+
+      
           </Modal>
         </main>
         <main className="mt-10">
