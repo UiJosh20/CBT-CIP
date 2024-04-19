@@ -143,8 +143,14 @@ const login = (req, res) => {
     });
 };
 
+
+const eventDetails = (req, res) =>[
+  console.log(req.body)
+]
+
 module.exports = {
   register,
   verifyToken,
   login,
+  eventDetails,
 };

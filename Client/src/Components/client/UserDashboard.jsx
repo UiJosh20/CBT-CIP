@@ -1,9 +1,10 @@
 import * as React from "react";
-import { Divider, Steps, TimePicker } from "antd";
-import { Button, Modal, Input, Select, Space, DatePicker } from "antd";
+import {  Divider, Steps, TimePicker ,Button, Modal, Input, Select, Space, DatePicker, Popover } from "antd";
 import { useState } from "react";
 import { PlusCircleFilled } from "@ant-design/icons";
-import FormItemLabel from "antd/es/form/FormItemLabel";
+import { useFormik } from "formik";
+import eventSchema from "../../schema/eventSchema";
+import axios from "axios";
 const customDot = (dot, { status, index }) => (
   <Popover
     content={
@@ -17,13 +18,14 @@ const customDot = (dot, { status, index }) => (
 );
 
 const UserDashboard = () => {
-  // const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [open, setOpen] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [modalText, setModalText] = useState("Content of the modal");
+  const detailURL = "http://localhost:3000/eventDetails";
+
 
   const showModal = () => {
     setOpen(true);
@@ -40,72 +42,82 @@ const UserDashboard = () => {
 
   const handleCancel = () => {
     setOpen(false);
-  }
+  };
   const handlePrev = () => {
-    if (currentStep === 0){
-      setCurrentStep(0)
-    }
-    else{
+    if (currentStep === 0) {
+      setCurrentStep(0);
+    } else {
       setCurrentStep(currentStep - 1);
-
     }
   };
 
-  const handleChange = (value) => {
-    console.log(`selected ${value}`);
-  };
-  const onChange = (date, dateString) => {
-    console.log(date, dateString);
-  };
+
+  const initialValues = {
+    eventTitle: "",
+    eventType: "",
+    eventDate: null,
+    eventTime: null,
+    eventState: "",
+    venueAddress: "",
+    file: null,
+  }
+  const handleSubmit = (values) =>{
+    axios.post(detailURL, values)
+    .then((res) => {
+      console.log(res);
+      handleOk()
+    }) .catch((error) => {
+      console.error("Error submitting form:", error);
+      // Handle error
+    });
+}
+  const formik = useFormik({
+    initialValues: initialValues,
+    validationSchema: eventSchema,
+    onSubmit: handleSubmit,
+  });
+
+ 
 
   const stepsContent = [
     <div>
       <div className="flex items-center justify-center gap-5 mt-5">
-        <Input placeholder="Event Title"></Input>
+        <Input
+          name="eventTitle"
+          placeholder="Event Title"
+          onChange={formik.handleChange}
+          value={formik.values.eventTitle}
+        />
         <Space wrap>
           <Select
             defaultValue="Event type"
-            style={{
-              width: 250,
-            }}
-            onChange={handleChange}
+            style={{ width: 250 }}
+            onChange={(value) => formik.setFieldValue("eventType", value)}
+            value={formik.values.eventType || "Event type"}
+            name="eventType"
             options={[
-              {
-                value: "wedding",
-                label: "Wedding",
-              },
-              {
-                value: "funeral",
-                label: "Funeral",
-              },
-              {
-                value: "Birthday",
-                label: "birthday",
-              },
-              {
-                value: "anniversary",
-                label: "Anniversary",
-              },
-              {
-                value: "ceremony",
-                label: "Ceremony",
-              },
-              {
-                value: "conference",
-                label: "Conference",
-              },
+              { value: "wedding", label: "Wedding" },
+              { value: "funeral", label: "Funeral" },
+              { value: "Birthday", label: "Birthday" },
+              { value: "anniversary", label: "Anniversary" },
+              { value: "ceremony", label: "Ceremony" },
+              { value: "conference", label: "Conference" },
             ]}
           />
         </Space>
       </div>
       <div className="my-3">
         <Space direction="vertical" size={12}>
-          <DatePicker onChange={onChange} className="w-56" />
+          <DatePicker
+         onChange={(value) => formik.setFieldValue("eventDate", value)}
+         value={formik.values.eventDate}
+            className="w-56"
+          />
         </Space>
         <Space direction="vertical" size={12}>
           <TimePicker
-            onChange={onChange}
-           
+            onChange={(value) => formik.setFieldValue("eventTime", value)}
+           value={formik.values.eventTime}
             className="w-53 mx-4"
           />
         </Space>
@@ -114,7 +126,10 @@ const UserDashboard = () => {
           <Select
             defaultValue="State"
             style={{ width: 170 }}
-            onChange={handleChange}
+            name="eventState"
+            onChange={(value) => formik.setFieldValue("eventState", value)}
+            value={formik.values.eventState || "Event State"}
+
             options={[
               { value: "Abia", label: "Abia" },
               { value: "Adamawa", label: "Adamawa" },
@@ -157,21 +172,29 @@ const UserDashboard = () => {
           />
         </Space>
         <div className="my-4">
-          <Input type="text" placeholder="Venue address" className="p-2" />
+          <Input
+            type="text"
+          placeholder="Venue address"
+          onChange={formik.handleChange}
+            name="venueAddress"
+            value={formik.values.venueAddress}
+            className="p-2"
+          />
         </div>
 
         <div className="my-4">
-          
-          <Input type="file"  className="p-2" />
+          <Input 
+          type="file"
+            onChange={(event) => formik.setFieldValue("eventFile", event.target.files[0])}
+          name="eventFile"
+            className="p-2"
+          />
         </div>
       </div>
     </div>,
 
-    <div>
-      
-    </div>
+    <div></div>,
   ];
-
   return (
     <>
       <section className="px-2 h-screen">
@@ -191,11 +214,13 @@ const UserDashboard = () => {
             onCancel={handleCancel}
             footer={[
               <div className="flex justify-between mt-4">
-              <Button onClick={handlePrev}>Previous</Button>
-              <Button onClick={handleCancel}>Cancel</Button>
-              <Button onClick={handleOk}>Proceed</Button>
-            </div>
-           ]}
+                <Button onClick={handleCancel}>Cancel</Button>
+                <div className="flex gap-5">
+                  <Button onClick={handlePrev}>Previous</Button>
+                  <Button onClick={formik.handleSubmit}>Next</Button>
+                </div>
+              </div>,
+            ]}
           >
             <Steps
               size="small"
@@ -214,8 +239,6 @@ const UserDashboard = () => {
             />
 
             {stepsContent[currentStep]}
-
-      
           </Modal>
         </main>
         <main className="mt-10">
