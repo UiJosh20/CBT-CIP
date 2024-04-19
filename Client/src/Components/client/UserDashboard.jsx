@@ -8,8 +8,23 @@ import axios from "axios";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
-import { Box, FormControl, Input, InputLabel, MenuItem, Select } from "@mui/material";
+import {
+  Box,
+  FormControl,
+  Input,
+  InputLabel,
+  MenuItem,
+  Select,
+} from "@mui/material";
+import Stepper from "@mui/material/Stepper";
+import Step from "@mui/material/Step";
+import StepButton from "@mui/material/StepButton";
 
+const steps = [
+  "Select campaign settings",
+  "Create an ad group",
+  "Create an ad",
+];
 
 const style = {
   position: "absolute",
@@ -28,7 +43,6 @@ const UserDashboard = () => {
   const [open, setOpen] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [modalText, setModalText] = useState("Content of the modal");
-  const [isSubmitting, setSubmitting] = useState(false);
   const [type, setType] = React.useState("");
 
   const showModal = () => {
@@ -65,77 +79,193 @@ const UserDashboard = () => {
     file: null,
   };
 
-  const { handleChange, handleSubmit, setFieldValue, values } = useFormik({
+
+  const { handleChange, handleSubmit: handleFormikSubmit, setFieldValue, values, isSubmitting } = useFormik({
     initialValues: initialValues,
     validationSchema: eventSchema,
-    onSubmit: (values) => {
-      console.log(values);
+    onSubmit: (values, { setSubmitting }) => {
+      axios
+        .post(detailURL, values)
+        .then((response) => {
+          console.log('Response from backend:', response.data);
+          setOpen(false);
+        })
+        .catch((error) => {
+          console.error('Error submitting form:', error);
+        })
+        .finally(() => {
+          setSubmitting(false);
+        });
     },
   });
 
+  const [activeStep, setActiveStep] = useState(0);
+  const [completed, setCompleted] = useState({});
+
+  const totalSteps = () => {
+    return steps.length;
+  };
+
+  const completedSteps = () => {
+    return Object.keys(completed).length;
+  };
+
+  const isLastStep = () => {
+    return activeStep === totalSteps() - 1;
+  };
+
+  const allStepsCompleted = () => {
+    return completedSteps() === totalSteps();
+  };
+
+  const handleNext = () => {
+    const newActiveStep =
+      isLastStep() && !allStepsCompleted()
+        ? steps.findIndex((step, i) => !(i in completed))
+        : activeStep + 1;
+    setActiveStep(newActiveStep);
+  };
+
+  const handleBack = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep - 1);
+  };
+
+  const handleStep = (step) => () => {
+    setActiveStep(step);
+  };
+
+  const handleComplete = () => {
+    const newCompleted = completed;
+    newCompleted[activeStep] = true;
+    setCompleted(newCompleted);
+    handleNext();
+  };
+
+  const handleReset = () => {
+    setActiveStep(0);
+    setCompleted({});
+  };
+
   const stepsContent = [
     <div>
-    <div className="flex items-center justify-center gap-5 mt-5">
-      <Input
-        name="eventTitle"
-        className="w-full p-3"
-        placeholder="Event Title"
-        onChange={handleChange}
-        value={values.eventTitle}
-      />
+      <div className="flex items-center justify-center gap-5 mt-5">
+        <Input
+          name="eventTitle"
+          className="w-full p-3 poppins-medium-sm"
+          placeholder="Event Title"
+          onChange={handleChange}
+          value={values.eventTitle}
+        />
 
-      <Box sx={{ minWidth: 120 }}>
-        <FormControl fullWidth>
-          <InputLabel id="demo-simple-select-label">Event type</InputLabel>
-          <Select
-            value={values.eventType}
-            onChange={(event) => setFieldValue("eventType", event.target.value)}
-            label="Event Type"
-            name="eventType"
-          >
-            <MenuItem value={"wedding"}>Wedding</MenuItem>
-            <MenuItem value={"funeral"}>Funeral</MenuItem>
-            <MenuItem value={"birthday"}>Birthday</MenuItem>
-          <MenuItem value={"anniversary"}>Anniversary</MenuItem>
-          <MenuItem value={"ceremony"}>Ceremony</MenuItem>
-          <MenuItem value={"conference"}>Conference</MenuItem>
-          </Select>
-        </FormControl>
-      </Box>
+        <Box sx={{ minWidth: 120 }}>
+          <FormControl fullWidth>
+            <InputLabel
+              id="demo-simple-select-label"
+              className="poppins-medium-sm"
+            >
+              Event type
+            </InputLabel>
+            <Select
+              value={values.eventType}
+              className="poppins-medium-sm"
+              onChange={(event) =>
+                setFieldValue("eventType", event.target.value)
+              }
+              label="Event Type"
+              name="eventType"
+            >
+              <MenuItem value={"wedding"} className="poppins-medium-sm">
+                Wedding
+              </MenuItem>
+              <MenuItem value={"funeral"} className="poppins-medium-sm">
+                Funeral
+              </MenuItem>
+              <MenuItem value={"birthday"} className="poppins-medium-sm">
+                Birthday
+              </MenuItem>
+              <MenuItem value={"anniversary"} className="poppins-medium-sm">
+                Anniversary
+              </MenuItem>
+              <MenuItem value={"ceremony"} className="poppins-medium-sm">
+                Ceremony
+              </MenuItem>
+              <MenuItem value={"conference"} className="poppins-medium-sm">
+                Conference
+              </MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
 
-      <Box sx={{ minWidth: 120 }}>
-        <FormControl fullWidth>
-          <InputLabel id="demo-simple-select-label">State</InputLabel>
-          <Select
-            value={values.eventState}
-            onChange={(event) => setFieldValue("eventState", event.target.value)}
-            label="State"
-            name="eventState"
-          >
-            <MenuItem value={"wedding"}>Wedding</MenuItem>
-            <MenuItem value={"funeral"}>Funeral</MenuItem>
-            <MenuItem value={"birthday"}>Birthday</MenuItem>
-          <MenuItem value={"anniversary"}>Anniversary</MenuItem>
-          <MenuItem value={"ceremony"}>Ceremony</MenuItem>
-          <MenuItem value={"conference"}>Conference</MenuItem>
-          </Select>
-        </FormControl>
-      </Box>
-      
-    </div>
-    <div>
-      <Input
-        name="eventTitle"
-        className="w-full p-3"
-        placeholder="Event Title"
-        onChange={handleChange}
-        value={values.eventTitle}
-      />
+        <Box sx={{ minWidth: 120 }}>
+          <FormControl fullWidth>
+            <InputLabel
+              id="demo-simple-select-label"
+              className="poppins-medium-sm"
+            >
+              State
+            </InputLabel>
+            <Select
+              value={values.eventState}
+              className="poppins-medium-sm"
+              onChange={(event) =>
+                setFieldValue("eventState", event.target.value)
+              }
+              label="State"
+              name="eventState"
+            >
+              <MenuItem value={"wedding"} className="poppins-medium-sm">
+                Wedding
+              </MenuItem>
+              <MenuItem value={"funeral"} className="poppins-medium-sm">
+                Funeral
+              </MenuItem>
+              <MenuItem value={"birthday"} className="poppins-medium-sm">
+                Birthday
+              </MenuItem>
+              <MenuItem value={"anniversary"} className="poppins-medium-sm">
+                Anniversary
+              </MenuItem>
+              <MenuItem value={"ceremony"} className="poppins-medium-sm">
+                Ceremony
+              </MenuItem>
+              <MenuItem value={"conference"} className="poppins-medium-sm">
+                Conference
+              </MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
       </div>
-     <Input type="date" name="eventDate" onChange={handleChange} value={values.eventDate}  className="p-3 mt-5" />
-  
+      <div>
+        <Input
+          name="venueAddress"
+          className="w-full p-3 poppins-medium-sm"
+          placeholder="Venue Address"
+          onChange={handleChange}
+          value={values.venueAddress}
+        />
+      </div>
+      <Input
+        type="date"
+        name="eventDate"
+        onChange={handleChange}
+        value={values.eventDate}
+        className="p-3 mt-5 poppins-medium-sm "
+      />
+      <Input
+        type="time"
+        name="eventTime"
+        onChange={handleChange}
+        value={values.eventTime}
+        className="p-3 mt-5 poppins-medium-sm ms-2"
+      />
+      <Input
+        type="file"
+        name="file"
+        onChange={handleChange}
+        value={values.file}
+        className="p-3 mt-5 poppins-medium-sm ms-5"
+      />
     </div>,
-      
   ];
 
   return (
@@ -143,6 +273,7 @@ const UserDashboard = () => {
       <section className="px-2 h-screen">
         <main className="bg-white px-5 py-10 lg:w-full flex justify-center mt-5">
           <Button
+          variant="contained"
             className="bg-blue-500 flex items-center gap-2"
             type="primary"
             onClick={showModal}
@@ -155,53 +286,85 @@ const UserDashboard = () => {
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
           >
+            <form onSubmit={handleFormikSubmit} sx={{ mt: 2 }}>
             <Box sx={style}>
-              <Typography id="modal-modal-title" variant="h6" component="h2">
-                Text in a modal
-              </Typography>
-              <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+              <Typography
+                id="modal-modal-title"
+                variant="h6"
+                component="h2"
+                className="poppins-medium"
+              >
+            <Box sx={{ width: "100%" }}>
+              <Stepper nonLinear activeStep={activeStep}>
+                {steps.map((label, index) => (
+                  <Step key={label} completed={completed[index]}>
+                    <StepButton onClick={handleStep(index)} color="inherit">
+                      {label}
+                    </StepButton>
+                  </Step>
+                ))}
+              </Stepper>
+              
                 {stepsContent[currentStep]}
-              </Typography>
+               
+           
+
+              <div>
+                {allStepsCompleted() ? (
+                  <>
+                    <Typography sx={{ mt: 2, mb: 1 }}>
+                      All steps completed - you&apos;re finished
+                    </Typography>
+                    <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
+                      <Box sx={{ flex: "1 1 auto" }} />
+                      <Button onClick={handleReset}>Reset</Button>
+                    </Box>
+                  </>
+                ) : (
+                  <>
+                   
+                    <Box sx={{ display: "flex", flexDirection: "row", pt: 2, mt: 5, }}>
+                      <Button
+                        color="inherit"
+                        disabled={activeStep === 0}
+                        onClick={handleBack}
+                        sx={{ mr: 1 }}
+                      >
+                        Back
+                      </Button>
+                      <Box sx={{ flex: "1 1 auto" }} />
+                      <Button onClick={handleNext} sx={{ mr: 1 }}>
+                        Next
+                      </Button>
+                      {activeStep !== steps.length &&
+                        (completed[activeStep] ? (
+                          <Typography
+                            variant="caption"
+                            sx={{ display: "inline-block", fontSize: 13, }}
+                          >
+                            Step {activeStep + 1} already completed
+                          </Typography>
+                        ) : (
+                          <Button onClick={handleComplete} variant="contained">
+                            {completedSteps() === totalSteps() - 1
+                              ? "Finish"
+                              : "Complete Step"}
+                          </Button>
+                        ))}
+                    </Box>
+                  </>
+                )}
+
+                
+              </div>
+              
             </Box>
-          </Modal>
-
-          {/* <Modal
-            title="Creating a New Event"
-            className="w96"
-            open={open} 
-            confirmLoading={confirmLoading}
-            onCancel={handleCancel}
-            footer={[
-              <div className="flex justify-between mt-4">
-                <Button onClick={handleCancel}>Cancel</Button>
-                <div className="flex gap-5">
-                  <Button onClick={handlePrev}>Previous</Button>
-                </div>
-              </div>,
-            ]}
-          >
-            <Steps
-              size="small"
-              current={currentStep}
-              items={[
-                {
-                  title: "Event details",
-                },
-                {
-                  title: "Confirming event details",
-                },
-                {
-                  title: "Create",
-                },
-              ]}
-            />
-
-            <form onSubmit={handleSubmit}>
-              {stepsContent[currentStep]}
-
-              <Button>Next</Button>
+               
+              </Typography>
+           
+            </Box>
             </form>
-          </Modal> */}
+          </Modal>
         </main>
         <main className="mt-10">
           <h6 className="text-center poppins-medium-sm">EVENT HISTORY</h6>
