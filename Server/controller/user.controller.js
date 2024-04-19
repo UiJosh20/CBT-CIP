@@ -144,9 +144,9 @@ const login = (req, res) => {
 };
 
 
-const eventDetails = (req, res) =>[
-  console.log(req.body)
-]
+const eventDetails = (req, res) => {
+  console.log(req)
+}
 
 module.exports = {
   register,

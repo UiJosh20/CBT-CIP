@@ -1,31 +1,35 @@
 import * as React from "react";
-import {  Divider, Steps, TimePicker ,Button, Modal, Input, Select, Space, DatePicker, Popover } from "antd";
+
 import { useState } from "react";
 import { PlusCircleFilled } from "@ant-design/icons";
 import { useFormik } from "formik";
 import eventSchema from "../../schema/eventSchema";
 import axios from "axios";
-const customDot = (dot, { status, index }) => (
-  <Popover
-    content={
-      <span>
-        step {index} status: {status}
-      </span>
-    }
-  >
-    {dot}
-  </Popover>
-);
+import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
+import Modal from "@mui/material/Modal";
+import { Box, FormControl, Input, InputLabel, MenuItem, Select } from "@mui/material";
+
+
+const style = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 700,
+  bgcolor: "background.paper",
+  boxShadow: 24,
+  p: 4,
+};
 
 const UserDashboard = () => {
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const detailURL = "http://localhost:3000/eventDetails";
   const [currentStep, setCurrentStep] = useState(0);
   const [open, setOpen] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [modalText, setModalText] = useState("Content of the modal");
-  const detailURL = "http://localhost:3000/eventDetails";
-
+  const [isSubmitting, setSubmitting] = useState(false);
+  const [type, setType] = React.useState("");
 
   const showModal = () => {
     setOpen(true);
@@ -51,7 +55,6 @@ const UserDashboard = () => {
     }
   };
 
-
   const initialValues = {
     eventTitle: "",
     eventType: "",
@@ -60,141 +63,81 @@ const UserDashboard = () => {
     eventState: "",
     venueAddress: "",
     file: null,
-  }
-  const handleSubmit = (values) =>{
-    axios.post(detailURL, values)
-    .then((res) => {
-      console.log(res);
-      handleOk()
-    }) .catch((error) => {
-      console.error("Error submitting form:", error);
-      // Handle error
-    });
-}
-  const formik = useFormik({
+  };
+
+  const { handleChange, handleSubmit, setFieldValue, values } = useFormik({
     initialValues: initialValues,
     validationSchema: eventSchema,
-    onSubmit: handleSubmit,
+    onSubmit: (values) => {
+      console.log(values);
+    },
   });
-
- 
 
   const stepsContent = [
     <div>
-      <div className="flex items-center justify-center gap-5 mt-5">
-        <Input
-          name="eventTitle"
-          placeholder="Event Title"
-          onChange={formik.handleChange}
-          value={formik.values.eventTitle}
-        />
-        <Space wrap>
+    <div className="flex items-center justify-center gap-5 mt-5">
+      <Input
+        name="eventTitle"
+        className="w-full p-3"
+        placeholder="Event Title"
+        onChange={handleChange}
+        value={values.eventTitle}
+      />
+
+      <Box sx={{ minWidth: 120 }}>
+        <FormControl fullWidth>
+          <InputLabel id="demo-simple-select-label">Event type</InputLabel>
           <Select
-            defaultValue="Event type"
-            style={{ width: 250 }}
-            onChange={(value) => formik.setFieldValue("eventType", value)}
-            value={formik.values.eventType || "Event type"}
+            value={values.eventType}
+            onChange={(event) => setFieldValue("eventType", event.target.value)}
+            label="Event Type"
             name="eventType"
-            options={[
-              { value: "wedding", label: "Wedding" },
-              { value: "funeral", label: "Funeral" },
-              { value: "Birthday", label: "Birthday" },
-              { value: "anniversary", label: "Anniversary" },
-              { value: "ceremony", label: "Ceremony" },
-              { value: "conference", label: "Conference" },
-            ]}
-          />
-        </Space>
-      </div>
-      <div className="my-3">
-        <Space direction="vertical" size={12}>
-          <DatePicker
-         onChange={(value) => formik.setFieldValue("eventDate", value)}
-         value={formik.values.eventDate}
-            className="w-56"
-          />
-        </Space>
-        <Space direction="vertical" size={12}>
-          <TimePicker
-            onChange={(value) => formik.setFieldValue("eventTime", value)}
-           value={formik.values.eventTime}
-            className="w-53 mx-4"
-          />
-        </Space>
+          >
+            <MenuItem value={"wedding"}>Wedding</MenuItem>
+            <MenuItem value={"funeral"}>Funeral</MenuItem>
+            <MenuItem value={"birthday"}>Birthday</MenuItem>
+          <MenuItem value={"anniversary"}>Anniversary</MenuItem>
+          <MenuItem value={"ceremony"}>Ceremony</MenuItem>
+          <MenuItem value={"conference"}>Conference</MenuItem>
+          </Select>
+        </FormControl>
+      </Box>
 
-        <Space wrap>
+      <Box sx={{ minWidth: 120 }}>
+        <FormControl fullWidth>
+          <InputLabel id="demo-simple-select-label">State</InputLabel>
           <Select
-            defaultValue="State"
-            style={{ width: 170 }}
+            value={values.eventState}
+            onChange={(event) => setFieldValue("eventState", event.target.value)}
+            label="State"
             name="eventState"
-            onChange={(value) => formik.setFieldValue("eventState", value)}
-            value={formik.values.eventState || "Event State"}
-
-            options={[
-              { value: "Abia", label: "Abia" },
-              { value: "Adamawa", label: "Adamawa" },
-              { value: "Akwa Ibom", label: "Akwa Ibom" },
-              { value: "Anambra", label: "Anambra" },
-              { value: "Bauchi", label: "Bauchi" },
-              { value: "Bayelsa", label: "Bayelsa" },
-              { value: "Benue", label: "Benue" },
-              { value: "Borno", label: "Borno" },
-              { value: "Cross River", label: "Cross River" },
-              { value: "Delta", label: "Delta" },
-              { value: "Ebonyi", label: "Ebonyi" },
-              { value: "Edo", label: "Edo" },
-              { value: "Ekiti", label: "Ekiti" },
-              { value: "Enugu", label: "Enugu" },
-              { value: "FCT", label: "Federal Capital Territory" },
-              { value: "Gombe", label: "Gombe" },
-              { value: "Imo", label: "Imo" },
-              { value: "Jigawa", label: "Jigawa" },
-              { value: "Kaduna", label: "Kaduna" },
-              { value: "Kano", label: "Kano" },
-              { value: "Katsina", label: "Katsina" },
-              { value: "Kebbi", label: "Kebbi" },
-              { value: "Kogi", label: "Kogi" },
-              { value: "Kwara", label: "Kwara" },
-              { value: "Lagos", label: "Lagos" },
-              { value: "Nasarawa", label: "Nasarawa" },
-              { value: "Niger", label: "Niger" },
-              { value: "Ogun", label: "Ogun" },
-              { value: "Ondo", label: "Ondo" },
-              { value: "Osun", label: "Osun" },
-              { value: "Oyo", label: "Oyo" },
-              { value: "Plateau", label: "Plateau" },
-              { value: "Rivers", label: "Rivers" },
-              { value: "Sokoto", label: "Sokoto" },
-              { value: "Taraba", label: "Taraba" },
-              { value: "Yobe", label: "Yobe" },
-              { value: "Zamfara", label: "Zamfara" },
-            ]}
-          />
-        </Space>
-        <div className="my-4">
-          <Input
-            type="text"
-          placeholder="Venue address"
-          onChange={formik.handleChange}
-            name="venueAddress"
-            value={formik.values.venueAddress}
-            className="p-2"
-          />
-        </div>
-
-        <div className="my-4">
-          <Input 
-          type="file"
-            onChange={(event) => formik.setFieldValue("eventFile", event.target.files[0])}
-          name="eventFile"
-            className="p-2"
-          />
-        </div>
+          >
+            <MenuItem value={"wedding"}>Wedding</MenuItem>
+            <MenuItem value={"funeral"}>Funeral</MenuItem>
+            <MenuItem value={"birthday"}>Birthday</MenuItem>
+          <MenuItem value={"anniversary"}>Anniversary</MenuItem>
+          <MenuItem value={"ceremony"}>Ceremony</MenuItem>
+          <MenuItem value={"conference"}>Conference</MenuItem>
+          </Select>
+        </FormControl>
+      </Box>
+      
+    </div>
+    <div>
+      <Input
+        name="eventTitle"
+        className="w-full p-3"
+        placeholder="Event Title"
+        onChange={handleChange}
+        value={values.eventTitle}
+      />
       </div>
+     <Input type="date" name="eventDate" onChange={handleChange} value={values.eventDate}  className="p-3 mt-5" />
+  
     </div>,
-
-    <div></div>,
+      
   ];
+
   return (
     <>
       <section className="px-2 h-screen">
@@ -207,9 +150,25 @@ const UserDashboard = () => {
             Create event <PlusCircleFilled />
           </Button>
           <Modal
+            open={open}
+            onClose={handleCancel}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+          >
+            <Box sx={style}>
+              <Typography id="modal-modal-title" variant="h6" component="h2">
+                Text in a modal
+              </Typography>
+              <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                {stepsContent[currentStep]}
+              </Typography>
+            </Box>
+          </Modal>
+
+          {/* <Modal
             title="Creating a New Event"
             className="w96"
-            open={open}
+            open={open} 
             confirmLoading={confirmLoading}
             onCancel={handleCancel}
             footer={[
@@ -217,7 +176,6 @@ const UserDashboard = () => {
                 <Button onClick={handleCancel}>Cancel</Button>
                 <div className="flex gap-5">
                   <Button onClick={handlePrev}>Previous</Button>
-                  <Button onClick={formik.handleSubmit}>Next</Button>
                 </div>
               </div>,
             ]}
@@ -230,7 +188,7 @@ const UserDashboard = () => {
                   title: "Event details",
                 },
                 {
-                  title: "COnfirming event details",
+                  title: "Confirming event details",
                 },
                 {
                   title: "Create",
@@ -238,8 +196,12 @@ const UserDashboard = () => {
               ]}
             />
 
-            {stepsContent[currentStep]}
-          </Modal>
+            <form onSubmit={handleSubmit}>
+              {stepsContent[currentStep]}
+
+              <Button>Next</Button>
+            </form>
+          </Modal> */}
         </main>
         <main className="mt-10">
           <h6 className="text-center poppins-medium-sm">EVENT HISTORY</h6>
