@@ -1,7 +1,7 @@
 import * as React from "react";
 
 import { useState } from "react";
-import { PlusCircleFilled } from "@ant-design/icons";
+import { ConsoleSqlOutlined, PlusCircleFilled } from "@ant-design/icons";
 import { useFormik } from "formik";
 import eventSchema from "../../schema/eventSchema";
 import axios from "axios";
@@ -39,23 +39,27 @@ const style = {
 
 const UserDashboard = () => {
   const detailURL = "http://localhost:3000/eventDetails";
+  const initialValues = {
+    eventTitle: "",
+    eventType: "",
+    eventDate: "",
+    eventTime: "",
+    eventState: "",
+    venueAddress: "",
+    file: "",
+  };
+
   const [currentStep, setCurrentStep] = useState(0);
   const [open, setOpen] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [modalText, setModalText] = useState("Content of the modal");
-  const [type, setType] = React.useState("");
+  const [values, setValues] = useState(initialValues);
+  const [activeStep, setActiveStep] = useState(0);
+  const [completed, setCompleted] = useState({});
+
 
   const showModal = () => {
     setOpen(true);
-  };
-  const handleOk = () => {
-    setModalText("The modal will be closed after two seconds");
-    setConfirmLoading(true);
-    setTimeout(() => {
-      setCurrentStep(currentStep + 1);
-      setModalText("The modal will be closed after two seconds");
-      setConfirmLoading(false);
-    }, 2000);
   };
 
   const handleCancel = () => {
@@ -69,38 +73,31 @@ const UserDashboard = () => {
     }
   };
 
-  const initialValues = {
-    eventTitle: "",
-    eventType: "",
-    eventDate: null,
-    eventTime: null,
-    eventState: "",
-    venueAddress: "",
-    file: null,
+
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setValues((prevValues) => ({
+      ...prevValues,
+      [name]: value,
+    }));
   };
+  
+  
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    handleComplete()
+    axios.post(detailURL, values)
+    .then((res)=>{
+      if(res){
+        console.log(res.data)
+      }
 
+    })
+    
+  }
 
-  const { handleChange, handleSubmit: handleFormikSubmit, setFieldValue, values, isSubmitting } = useFormik({
-    initialValues: initialValues,
-    validationSchema: eventSchema,
-    onSubmit: (values, { setSubmitting }) => {
-      axios
-        .post(detailURL, values)
-        .then((response) => {
-          console.log('Response from backend:', response.data);
-          setOpen(false);
-        })
-        .catch((error) => {
-          console.error('Error submitting form:', error);
-        })
-        .finally(() => {
-          setSubmitting(false);
-        });
-    },
-  });
-
-  const [activeStep, setActiveStep] = useState(0);
-  const [completed, setCompleted] = useState({});
+  
 
   const totalSteps = () => {
     return steps.length;
@@ -124,10 +121,14 @@ const UserDashboard = () => {
         ? steps.findIndex((step, i) => !(i in completed))
         : activeStep + 1;
     setActiveStep(newActiveStep);
+    setCurrentStep(currentStep + 1);
+
   };
 
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
+    setCurrentStep(currentStep - 1);
+
   };
 
   const handleStep = (step) => () => {
@@ -146,6 +147,47 @@ const UserDashboard = () => {
     setCompleted({});
   };
 
+  const NigerianStates = [
+    "Abia",
+    "Adamawa",
+    "Akwa Ibom",
+    "Anambra",
+    "Bauchi",
+    "Bayelsa",
+    "Benue",
+    "Borno",
+    "Cross River",
+    "Delta",
+    "Ebonyi",
+    "Edo",
+    "Ekiti",
+    "Enugu",
+    "FCT - Abuja",
+    "Gombe",
+    "Imo",
+    "Jigawa",
+    "Kaduna",
+    "Kano",
+    "Katsina",
+    "Kebbi",
+    "Kogi",
+    "Kwara",
+    "Lagos",
+    "Nasarawa",
+    "Niger",
+    "Ogun",
+    "Ondo",
+    "Osun",
+    "Oyo",
+    "Plateau",
+    "Rivers",
+    "Sokoto",
+    "Taraba",
+    "Yobe",
+    "Zamfara",
+  ];
+
+  
   const stepsContent = [
     <div>
       <div className="flex items-center justify-center gap-5 mt-5">
@@ -154,86 +196,64 @@ const UserDashboard = () => {
           className="w-full p-3 poppins-medium-sm"
           placeholder="Event Title"
           onChange={handleChange}
-          value={values.eventTitle}
         />
 
-        <Box sx={{ minWidth: 120 }}>
-          <FormControl fullWidth>
-            <InputLabel
-              id="demo-simple-select-label"
-              className="poppins-medium-sm"
-            >
-              Event type
-            </InputLabel>
-            <Select
-              value={values.eventType}
-              className="poppins-medium-sm"
-              onChange={(event) =>
-                setFieldValue("eventType", event.target.value)
-              }
-              label="Event Type"
-              name="eventType"
-            >
-              <MenuItem value={"wedding"} className="poppins-medium-sm">
-                Wedding
-              </MenuItem>
-              <MenuItem value={"funeral"} className="poppins-medium-sm">
-                Funeral
-              </MenuItem>
-              <MenuItem value={"birthday"} className="poppins-medium-sm">
-                Birthday
-              </MenuItem>
-              <MenuItem value={"anniversary"} className="poppins-medium-sm">
-                Anniversary
-              </MenuItem>
-              <MenuItem value={"ceremony"} className="poppins-medium-sm">
-                Ceremony
-              </MenuItem>
-              <MenuItem value={"conference"} className="poppins-medium-sm">
-                Conference
-              </MenuItem>
-            </Select>
-          </FormControl>
-        </Box>
+        <FormControl fullWidth>
+          <InputLabel
+            id="demo-simple-select-label"
+            className="poppins-medium-sm"
+          >
+            Event type
+          </InputLabel>
+          <Select
+            className="poppins-medium-sm"
+            value={values.eventType || ""}
+            onChange={handleChange}
+            label="Event Type"
+            name="eventType"
+          >
+            <MenuItem value={"wedding"} className="poppins-medium-sm">
+              Wedding
+            </MenuItem>
+            <MenuItem value={"funeral"} className="poppins-medium-sm">
+              Funeral
+            </MenuItem>
+            <MenuItem value={"birthday"} className="poppins-medium-sm">
+              Birthday
+            </MenuItem>
+            <MenuItem value={"anniversary"} className="poppins-medium-sm">
+              Anniversary
+            </MenuItem>
+            <MenuItem value={"ceremony"} className="poppins-medium-sm">
+              Ceremony
+            </MenuItem>
+            <MenuItem value={"conference"} className="poppins-medium-sm">
+              Conference
+            </MenuItem>
+          </Select>
+        </FormControl>
 
-        <Box sx={{ minWidth: 120 }}>
-          <FormControl fullWidth>
-            <InputLabel
-              id="demo-simple-select-label"
-              className="poppins-medium-sm"
-            >
-              State
-            </InputLabel>
-            <Select
-              value={values.eventState}
-              className="poppins-medium-sm"
-              onChange={(event) =>
-                setFieldValue("eventState", event.target.value)
-              }
-              label="State"
-              name="eventState"
-            >
-              <MenuItem value={"wedding"} className="poppins-medium-sm">
-                Wedding
-              </MenuItem>
-              <MenuItem value={"funeral"} className="poppins-medium-sm">
-                Funeral
-              </MenuItem>
-              <MenuItem value={"birthday"} className="poppins-medium-sm">
-                Birthday
-              </MenuItem>
-              <MenuItem value={"anniversary"} className="poppins-medium-sm">
-                Anniversary
-              </MenuItem>
-              <MenuItem value={"ceremony"} className="poppins-medium-sm">
-                Ceremony
-              </MenuItem>
-              <MenuItem value={"conference"} className="poppins-medium-sm">
-                Conference
-              </MenuItem>
-            </Select>
-          </FormControl>
-        </Box>
+        <FormControl fullWidth>
+          <InputLabel
+            id="demo-simple-select-label"
+            className="poppins-medium-sm"
+          >
+            State
+          </InputLabel>
+          <Select
+            className="poppins-medium-sm"
+            onChange={handleChange}
+            value={values.eventState || ""}
+            label="State"
+            name="eventState"
+          >
+            {NigerianStates.map((state) => (
+            <MenuItem key={state} value={state}>
+              {state}
+            </MenuItem>
+          ))}
+          </Select>
+        </FormControl>
       </div>
       <div>
         <Input
@@ -241,31 +261,30 @@ const UserDashboard = () => {
           className="w-full p-3 poppins-medium-sm"
           placeholder="Venue Address"
           onChange={handleChange}
-          value={values.venueAddress}
         />
       </div>
       <Input
         type="date"
         name="eventDate"
         onChange={handleChange}
-        value={values.eventDate}
         className="p-3 mt-5 poppins-medium-sm "
       />
       <Input
         type="time"
         name="eventTime"
         onChange={handleChange}
-        value={values.eventTime}
         className="p-3 mt-5 poppins-medium-sm ms-2"
       />
-      <Input
+       <Input
         type="file"
         name="file"
         onChange={handleChange}
-        value={values.file}
-        className="p-3 mt-5 poppins-medium-sm ms-5"
+        className="p-3 mt-5 poppins-medium-sm ms-2"
       />
     </div>,
+    <div>
+
+    </div>
   ];
 
   return (
@@ -273,7 +292,7 @@ const UserDashboard = () => {
       <section className="px-2 h-screen">
         <main className="bg-white px-5 py-10 lg:w-full flex justify-center mt-5">
           <Button
-          variant="contained"
+            variant="contained"
             className="bg-blue-500 flex items-center gap-2"
             type="primary"
             onClick={showModal}
@@ -286,7 +305,7 @@ const UserDashboard = () => {
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
           >
-            <form onSubmit={handleFormikSubmit} sx={{ mt: 2 }}>
+          <form onSubmit={handleSubmit}>
             <Box sx={style}>
               <Typography
                 id="modal-modal-title"
@@ -294,77 +313,87 @@ const UserDashboard = () => {
                 component="h2"
                 className="poppins-medium"
               >
-            <Box sx={{ width: "100%" }}>
-              <Stepper nonLinear activeStep={activeStep}>
-                {steps.map((label, index) => (
-                  <Step key={label} completed={completed[index]}>
-                    <StepButton onClick={handleStep(index)} color="inherit">
-                      {label}
-                    </StepButton>
-                  </Step>
-                ))}
-              </Stepper>
-              
-                {stepsContent[currentStep]}
-               
-           
+                <Box sx={{ width: "100%" }}>
+                  <Stepper nonLinear activeStep={activeStep}>
+                    {steps.map((label, index) => (
+                      <Step key={label} completed={completed[index]}>
+                        <StepButton onClick={handleStep(index)} color="inherit">
+                          {label}
+                        </StepButton>
+                      </Step>
+                    ))}
+                  </Stepper>
 
-              <div>
-                {allStepsCompleted() ? (
-                  <>
-                    <Typography sx={{ mt: 2, mb: 1 }}>
-                      All steps completed - you&apos;re finished
-                    </Typography>
-                    <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
-                      <Box sx={{ flex: "1 1 auto" }} />
-                      <Button onClick={handleReset}>Reset</Button>
-                    </Box>
-                  </>
-                ) : (
-                  <>
-                   
-                    <Box sx={{ display: "flex", flexDirection: "row", pt: 2, mt: 5, }}>
-                      <Button
-                        color="inherit"
-                        disabled={activeStep === 0}
-                        onClick={handleBack}
-                        sx={{ mr: 1 }}
-                      >
-                        Back
-                      </Button>
-                      <Box sx={{ flex: "1 1 auto" }} />
-                      <Button onClick={handleNext} sx={{ mr: 1 }}>
-                        Next
-                      </Button>
-                      {activeStep !== steps.length &&
-                        (completed[activeStep] ? (
-                          <Typography
-                            variant="caption"
-                            sx={{ display: "inline-block", fontSize: 13, }}
+                  {stepsContent[currentStep]}
+                    
+                  
+
+
+                  <div>
+                    {allStepsCompleted() ? (
+                      <>
+                        <Typography sx={{ mt: 2, mb: 1 }}>
+                          All steps completed - you&apos;re finished
+                        </Typography>
+                        <Box
+                          sx={{ display: "flex", flexDirection: "row", pt: 2 }}
+                        >
+                          <Box sx={{ flex: "1 1 auto" }} />
+                          <Button onClick={handleReset}>Reset</Button>
+                        </Box>
+                      </>
+                    ) : (
+                      <>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            flexDirection: "row",
+                            pt: 2,
+                            mt: 5,
+                          }}
+                        >
+                          <Button
+                            color="inherit"
+                            disabled={activeStep === 0 }
+                            onClick={handleBack}
+                            sx={{ mr: 1 }}
                           >
-                            Step {activeStep + 1} already completed
-                          </Typography>
-                        ) : (
-                          <Button onClick={handleComplete} variant="contained">
-                            {completedSteps() === totalSteps() - 1
-                              ? "Finish"
-                              : "Complete Step"}
+                            Back
                           </Button>
-                        ))}
-                    </Box>
-                  </>
-                )}
-
-                
-              </div>
-              
-            </Box>
-               
+                          <Box sx={{ flex: "1 1 auto" }} />
+                          <Button 
+                          onClick={handleNext} 
+                          sx={{ mr: 1 }} 
+                            // disabled={activeStep === 0 }
+                          
+                          >
+                            Next
+                          </Button>
+                          {activeStep !== steps.length &&
+                            (completed[activeStep] ? (
+                              <Typography
+                                variant="caption"
+                                sx={{ display: "inline-block", fontSize: 13 }}
+                              >
+                                Step {activeStep + 1} already completed
+                              </Typography>
+                            ) : (
+                              <Button type="submit" variant="contained">
+                                {completedSteps() === totalSteps() - 1
+                                  ? "Finish"
+                                  : "Complete Step"}
+                              </Button>
+                            ))}
+                        </Box>
+                      </>
+                    )}
+                  </div>
+                </Box>
               </Typography>
-           
             </Box>
-            </form>
+          </form>
           </Modal>
+          
         </main>
         <main className="mt-10">
           <h6 className="text-center poppins-medium-sm">EVENT HISTORY</h6>
