@@ -145,7 +145,23 @@ const login = (req, res) => {
 
 
 const eventDetails = (req, res) => {
-  console.log(req.body)
+  const {eventTitle, eventType, eventDate, eventTime, eventState, venueAddress, file} = req.body
+
+  const event = new userModel({
+    eventTitle,
+    eventType,
+    eventDate,
+    eventTime,
+    eventState,
+    venueAddress,
+    file
+  })
+  
+  event.save()
+  .then(() => {
+    console.log("Event saved successfully");
+    res.send({ message: "Event saved successfully", status: 200 });
+  })
 }
 
 module.exports = {
