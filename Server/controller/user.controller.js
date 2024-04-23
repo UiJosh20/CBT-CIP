@@ -1,4 +1,5 @@
 const userModel = require("../model/user.model");
+const userEvent = require("../model/event.model");
 const nodemailer = require("nodemailer");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -106,6 +107,24 @@ const verifyToken = (req, res) => {
 };
 
 
+const verifyJWT = (req, res) =>{
+  const { token } = req.body;
+  jwt.verify(token, process.env.SECRET, (err, decoded) => {
+    if (err) {
+      console.error("Token verification failed:", err);
+    } else {
+      console.log("Token verified successfully");
+      res.send({
+        message: "Token verified successfully",
+        status: true,
+        decoded: decoded,
+        valid: true,
+        token: token,
+      });
+    }
+  });
+}
+
 const login = (req, res) => {
   let { email, password } = req.body;
   userModel
@@ -145,28 +164,39 @@ const login = (req, res) => {
 
 
 const eventDetails = (req, res) => {
-  const {eventTitle, eventType, eventDate, eventTime, eventState, venueAddress, file} = req.body
+  const token = req.headers.authorization.split(" ")[1];
+  const decoded = jwt.verify(token, process.env.SECRET);
+  const userId = decoded.email;
+  const { eventTitle, eventType, eventDate, eventTime, eventState, venueAddress, file } = req.body;
 
-  const event = new userModel({
-    eventTitle,
-    eventType,
-    eventDate,
-    eventTime,
-    eventState,
-    venueAddress,
-    file
-  })
-  
+  const event = new userEvent({
+    userId,
+    events: [{
+      eventTitle,
+      eventType,
+      eventDate,
+      eventTime,
+      eventState,
+      venueAddress,
+    }],
+  });
+
   event.save()
-  .then(() => {
-    console.log("Event saved successfully");
-    res.send({ message: "Event saved successfully", status: 200 });
-  })
-}
+    .then(() => {
+      console.log("Event saved successfully");
+      res.status(201).send({ message: "Event saved successfully", status: 200 });
+    })
+    .catch((error) => {
+      console.error("Error saving event:", error);
+      res.status(500).json({ message: "Internal Server Error" });
+    });
+};
+
 
 module.exports = {
   register,
   verifyToken,
   login,
   eventDetails,
+  verifyJWT,
 };

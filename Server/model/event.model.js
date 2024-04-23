@@ -5,21 +5,26 @@ const URI = process.env.URI
 
 mongoose.connect(URI)
 .then((response)=>{
-    console.log("Database is connected successfully")
+    console.log("Event database is connected successfully")
 })
 .catch((err)=>{
     console.error(err);
 })
 
-let eventSchema = mongoose.Schema({
+const eventSchema = mongoose.Schema({
     eventTitle: String,
     eventType: String,
     eventDate: {type: Date, required: true},
-    eventTime: 
-    
-    }
+    eventTime: String,
+    eventState: String,
+    venueAddress: String,
 })
 
-let eventModel = mongoose.model('eventModel', eventSchema)
+const userEventSchema = mongoose.Schema({
+    userId: {type: String,  ref: 'User', unique:true},
+    events:[eventSchema]
+})
 
-module.exports = userM
+let userEvent = mongoose.model('userEvent', userEventSchema)
+
+module.exports = userEvent

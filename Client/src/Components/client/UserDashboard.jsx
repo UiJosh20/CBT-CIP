@@ -21,9 +21,9 @@ import Step from "@mui/material/Step";
 import StepButton from "@mui/material/StepButton";
 
 const steps = [
-  "Select campaign settings",
-  "Create an ad group",
-  "Create an ad",
+  "Create an event",
+  "Confirm event details",
+  "Finish",
 ];
 
 const style = {
@@ -46,7 +46,7 @@ const UserDashboard = () => {
     eventTime: "",
     eventState: "",
     venueAddress: "",
-    file: "",
+
   };
 
   const [currentStep, setCurrentStep] = useState(0);
@@ -56,6 +56,7 @@ const UserDashboard = () => {
   const [values, setValues] = useState(initialValues);
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState({});
+  // const [myFile, setMyFile] = useState(null);
 
 
   const showModal = () => {
@@ -83,14 +84,32 @@ const UserDashboard = () => {
     }));
   };
   
+  // const changeFile = (e) =>{
+  //   let reader = new FileReader()
+  //   let myImage = e.target.files[0]
+  //   reader.readAsDataURL(myImage)
+   
+  //   reader.onload = () =>{
+  //     setMyFile(reader.result)
+  //   }
+  // }
+  
+
   
   const handleSubmit = (event) => {
+    let token = localStorage.getItem("token");
     event.preventDefault();
-    handleComplete()
-    axios.post(detailURL, values)
+    axios.post(detailURL, values, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
     .then((res)=>{
       if(res){
         console.log(res.data)
+        handleComplete()
+      }else{
+        console.log("something went wrong")
       }
 
     })
@@ -275,12 +294,12 @@ const UserDashboard = () => {
         onChange={handleChange}
         className="p-3 mt-5 poppins-medium-sm ms-2"
       />
-       <Input
+        {/* <Input
         type="file"
         name="file"
-        onChange={handleChange}
+        onChange={(e)=>changeFile(e)}
         className="p-3 mt-5 poppins-medium-sm ms-2"
-      />
+      /> */}
     </div>,
     <div>
 
