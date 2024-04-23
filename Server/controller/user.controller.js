@@ -182,9 +182,9 @@ const eventDetails = (req, res) => {
   });
 
   event.save()
-    .then(() => {
+    .then((events) => {
       console.log("Event saved successfully");
-      res.status(201).send({ message: "Event saved successfully", status: 200 });
+      res.status(201).send({ message: "Event saved successfully", status: 200, events });
     })
     .catch((error) => {
       console.error("Error saving event:", error);
@@ -192,6 +192,9 @@ const eventDetails = (req, res) => {
     });
 };
 
+const confirmEventDetails = (req, res) => {
+
+}
 
 module.exports = {
   register,
@@ -199,4 +202,5 @@ module.exports = {
   login,
   eventDetails,
   verifyJWT,
+  confirmEventDetails,
 };

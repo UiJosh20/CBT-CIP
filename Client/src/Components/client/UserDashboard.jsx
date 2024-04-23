@@ -20,11 +20,7 @@ import Stepper from "@mui/material/Stepper";
 import Step from "@mui/material/Step";
 import StepButton from "@mui/material/StepButton";
 
-const steps = [
-  "Create an event",
-  "Confirm event details",
-  "Finish",
-];
+const steps = ["Create an event", "Confirm event details", "Finish"];
 
 const style = {
   position: "absolute",
@@ -39,6 +35,7 @@ const style = {
 
 const UserDashboard = () => {
   const detailURL = "http://localhost:3000/eventDetails";
+  const displayDetail = "http://localhost:3000/confirmEventDetails";
   const initialValues = {
     eventTitle: "",
     eventType: "",
@@ -46,7 +43,6 @@ const UserDashboard = () => {
     eventTime: "",
     eventState: "",
     venueAddress: "",
-
   };
 
   const [currentStep, setCurrentStep] = useState(0);
@@ -56,8 +52,8 @@ const UserDashboard = () => {
   const [values, setValues] = useState(initialValues);
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState({});
+  const [details, setDetails] = useState([]);
   // const [myFile, setMyFile] = useState(null);
-
 
   const showModal = () => {
     setOpen(true);
@@ -74,8 +70,6 @@ const UserDashboard = () => {
     }
   };
 
-
-
   const handleChange = (event) => {
     const { name, value } = event.target;
     setValues((prevValues) => ({
@@ -83,40 +77,36 @@ const UserDashboard = () => {
       [name]: value,
     }));
   };
-  
+
   // const changeFile = (e) =>{
   //   let reader = new FileReader()
   //   let myImage = e.target.files[0]
   //   reader.readAsDataURL(myImage)
-   
+
   //   reader.onload = () =>{
   //     setMyFile(reader.result)
   //   }
   // }
-  
 
-  
   const handleSubmit = (event) => {
     let token = localStorage.getItem("token");
     event.preventDefault();
-    axios.post(detailURL, values, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  })
-    .then((res)=>{
-      if(res){
-        console.log(res.data)
-        handleComplete()
-      }else{
-        console.log("something went wrong")
-      }
-
-    })
-    
-  }
-
-  
+    axios
+      .post(detailURL, values, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        if (res) {
+          console.log(res.data.events.events[0]);
+          setDetails(res.data.events.events[0]);
+          handleComplete();
+        } else {
+          console.log("something went wrong");
+        }
+      });
+  };
 
   const totalSteps = () => {
     return steps.length;
@@ -141,13 +131,11 @@ const UserDashboard = () => {
         : activeStep + 1;
     setActiveStep(newActiveStep);
     setCurrentStep(currentStep + 1);
-
   };
 
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
     setCurrentStep(currentStep - 1);
-
   };
 
   const handleStep = (step) => () => {
@@ -206,7 +194,6 @@ const UserDashboard = () => {
     "Zamfara",
   ];
 
-  
   const stepsContent = [
     <div>
       <div className="flex items-center justify-center gap-5 mt-5">
@@ -267,10 +254,10 @@ const UserDashboard = () => {
             name="eventState"
           >
             {NigerianStates.map((state) => (
-            <MenuItem key={state} value={state}>
-              {state}
-            </MenuItem>
-          ))}
+              <MenuItem key={state} value={state}>
+                {state}
+              </MenuItem>
+            ))}
           </Select>
         </FormControl>
       </div>
@@ -294,7 +281,7 @@ const UserDashboard = () => {
         onChange={handleChange}
         className="p-3 mt-5 poppins-medium-sm ms-2"
       />
-        {/* <Input
+      {/* <Input
         type="file"
         name="file"
         onChange={(e)=>changeFile(e)}
@@ -302,8 +289,36 @@ const UserDashboard = () => {
       /> */}
     </div>,
     <div>
+      <div>
+        <div className="flex gap-4 mt-2 justify-between">
+          <p className="poppins-bold-md">Title : </p>
+          <p className="poppins-medium-sm uppercase">{details.eventTitle}</p>
+        </div>
+        <div className="flex gap-4 justify-between">
+          <p className="poppins-bold-md">Type : </p>
+          <p className="poppins-medium-sm">{details.eventType}</p>
+        </div>
+        <div className="flex gap-4 justify-between">
+          <p className="poppins-bold-md">State  : </p>
+          <p className="poppins-medium-sm">{details.eventState}</p>
+        </div>
+        <div className="flex gap-4  justify-between">
+          <p className="poppins-bold-md">Venue Address : </p>
+          <p className="poppins-medium-sm">{details.venueAddress}</p>
 
-    </div>
+        </div>
+        <div className="flex gap-4 justify-between">
+          <p className="poppins-bold-md">Date : </p>
+          <p className="poppins-medium-sm">{details.eventDate}</p>
+
+        </div>
+        <div className="flex gap-4 justify-between items-center">
+          <p className="poppins-bold-md">Time : </p>
+          <p className="poppins-medium-sm">{details.eventTime}</p>
+
+        </div>
+      </div>
+    </div>,
   ];
 
   return (
@@ -324,95 +339,97 @@ const UserDashboard = () => {
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
           >
-          <form onSubmit={handleSubmit}>
-            <Box sx={style}>
-              <Typography
-                id="modal-modal-title"
-                variant="h6"
-                component="h2"
-                className="poppins-medium"
-              >
-                <Box sx={{ width: "100%" }}>
-                  <Stepper nonLinear activeStep={activeStep}>
-                    {steps.map((label, index) => (
-                      <Step key={label} completed={completed[index]}>
-                        <StepButton onClick={handleStep(index)} color="inherit">
-                          {label}
-                        </StepButton>
-                      </Step>
-                    ))}
-                  </Stepper>
-
-                  {stepsContent[currentStep]}
-                    
-                  
-
-
-                  <div>
-                    {allStepsCompleted() ? (
-                      <>
-                        <Typography sx={{ mt: 2, mb: 1 }}>
-                          All steps completed - you&apos;re finished
-                        </Typography>
-                        <Box
-                          sx={{ display: "flex", flexDirection: "row", pt: 2 }}
-                        >
-                          <Box sx={{ flex: "1 1 auto" }} />
-                          <Button onClick={handleReset}>Reset</Button>
-                        </Box>
-                      </>
-                    ) : (
-                      <>
-                        <Box
-                          sx={{
-                            display: "flex",
-                            flexDirection: "row",
-                            pt: 2,
-                            mt: 5,
-                          }}
-                        >
-                          <Button
+            <form onSubmit={handleSubmit}>
+              <Box sx={style}>
+                <Typography
+                  id="modal-modal-title"
+                  variant="h6"
+                  component="h2"
+                  className="poppins-medium"
+                >
+                  <Box sx={{ width: "100%" }}>
+                    <Stepper nonLinear activeStep={activeStep}>
+                      {steps.map((label, index) => (
+                        <Step key={label} completed={completed[index]}>
+                          <StepButton
+                            onClick={handleStep(index)}
                             color="inherit"
-                            disabled={activeStep === 0 }
-                            onClick={handleBack}
-                            sx={{ mr: 1 }}
                           >
-                            Back
-                          </Button>
-                          <Box sx={{ flex: "1 1 auto" }} />
-                          <Button 
-                          onClick={handleNext} 
-                          sx={{ mr: 1 }} 
-                            // disabled={activeStep === 0 }
-                          
+                            {label}
+                          </StepButton>
+                        </Step>
+                      ))}
+                    </Stepper>
+
+                    {stepsContent[currentStep]}
+
+                    <div>
+                      {allStepsCompleted() ? (
+                        <>
+                          <Typography sx={{ mt: 2, mb: 1 }}>
+                            All steps completed - you&apos;re finished
+                          </Typography>
+                          <Box
+                            sx={{
+                              display: "flex",
+                              flexDirection: "row",
+                              pt: 2,
+                            }}
                           >
-                            Next
-                          </Button>
-                          {activeStep !== steps.length &&
-                            (completed[activeStep] ? (
-                              <Typography
-                                variant="caption"
-                                sx={{ display: "inline-block", fontSize: 13 }}
-                              >
-                                Step {activeStep + 1} already completed
-                              </Typography>
-                            ) : (
-                              <Button type="submit" variant="contained">
-                                {completedSteps() === totalSteps() - 1
-                                  ? "Finish"
-                                  : "Complete Step"}
-                              </Button>
-                            ))}
-                        </Box>
-                      </>
-                    )}
-                  </div>
-                </Box>
-              </Typography>
-            </Box>
-          </form>
+                            <Box sx={{ flex: "1 1 auto" }} />
+                            <Button onClick={handleReset}>Reset</Button>
+                          </Box>
+                        </>
+                      ) : (
+                        <>
+                          <Box
+                            sx={{
+                              display: "flex",
+                              flexDirection: "row",
+                              pt: 2,
+                              mt: 5,
+                            }}
+                          >
+                            <Button
+                              color="inherit"
+                              disabled={activeStep === 0}
+                              onClick={handleBack}
+                              sx={{ mr: 1 }}
+                            >
+                              Back
+                            </Button>
+                            <Box sx={{ flex: "1 1 auto" }} />
+                            <Button
+                              onClick={handleNext}
+                              sx={{ mr: 1 }}
+                              // disabled={activeStep === 0 }
+                            >
+                              Next
+                            </Button>
+                            {activeStep !== steps.length &&
+                              (completed[activeStep] ? (
+                                <Typography
+                                  variant="caption"
+                                  sx={{ display: "inline-block", fontSize: 13 }}
+                                >
+                                  Step {activeStep + 1} already completed
+                                </Typography>
+                              ) : (
+                                <Button type="submit" variant="contained">
+                                  {completedSteps() === totalSteps() - 1
+                                    ? "Finish"
+                                    : "Complete Step"}
+                                </Button>
+                              ))}
+                          </Box>
+                        </>
+                      )}
+                    </div>
+                  </Box>
+                </Typography>
+              </Box>
+            </form>
           </Modal>
-          
         </main>
         <main className="mt-10">
           <h6 className="text-center poppins-medium-sm">EVENT HISTORY</h6>
