@@ -331,6 +331,9 @@ const UserDashboard = () => {
         </div>
       </div>
     </div>,
+    <div>
+      <p>Your event has been created successfully, please proceed</p>
+    </div>
   ];
 
   return (
