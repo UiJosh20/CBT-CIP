@@ -88,24 +88,36 @@ const UserDashboard = () => {
   //   }
   // }
 
+  const handleStepCompletion = () => {
+    const newCompleted = { ...completed };
+    newCompleted[currentStep] = true;
+    setCompleted(newCompleted);
+    handleNext();
+  };
+
   const handleSubmit = (event) => {
-    let token = localStorage.getItem("token");
-    event.preventDefault();
-    axios
-      .post(detailURL, values, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((res) => {
-        if (res) {
-          console.log(res.data.events.events[0]);
-          setDetails(res.data.events.events[0]);
-          handleComplete();
-        } else {
-          console.log("something went wrong");
-        }
-      });
+    if(currentStep === 0){
+      let token = localStorage.getItem("token");
+      event.preventDefault();
+      axios
+        .post(detailURL, values, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((res) => {
+          if (res) {
+            console.log(res.data.events.events[0]);
+            setDetails(res.data.events.events[0]);
+            handleComplete();
+          } else {
+            console.log("something went wrong");
+          }
+        });
+    }else{
+      handleStepCompletion();
+    }
+
   };
 
   const totalSteps = () => {
