@@ -20,6 +20,7 @@ import Stepper from "@mui/material/Stepper";
 import Step from "@mui/material/Step";
 import StepButton from "@mui/material/StepButton";
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const steps = ["Create an event", "Confirm event details", "Finish"];
 
@@ -35,8 +36,8 @@ const style = {
 };
 
 const UserDashboard = () => {
+  const navigate = useNavigate()
   const detailURL = "http://localhost:3000/eventDetails";
-  const displayDetail = "http://localhost:3000/confirmEventDetails";
   const initialValues = {
     eventTitle: "",
     eventType: "",
@@ -102,15 +103,7 @@ const UserDashboard = () => {
     }));
   };
 
-  // const changeFile = (e) =>{
-  //   let reader = new FileReader()
-  //   let myImage = e.target.files[0]
-  //   reader.readAsDataURL(myImage)
 
-  //   reader.onload = () =>{
-  //     setMyFile(reader.result)
-  //   }
-  // }
 
   const handleStepCompletion = () => {
     const newCompleted = { ...completed };
@@ -160,12 +153,12 @@ const UserDashboard = () => {
   };
 
   const handleNext = () => {
-   if (activeStep === 2) {
+    if (activeStep === 2) {
       const newCompleted = completed;
       newCompleted[activeStep] = true;
       setCompleted(newCompleted);
-      // getAllEvents();
-      setOpen(false); 
+     window.location.reload();
+      setOpen(false);
     } else {
       const newActiveStep =
         isLastStep() && !allStepsCompleted()
@@ -195,6 +188,26 @@ const UserDashboard = () => {
   const handleReset = () => {
     setActiveStep(0);
     setCompleted({});
+  };
+
+  const handleDeleteEvent = (eventId) => {
+    axios
+      .delete(`http://localhost:3000/deleteEvent/${eventId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        })
+      .then((res) => {
+        if (res.status === 200) {
+          setEvents(events.filter((event) => event._id !== eventId));
+          console.log("Event deleted successfully");
+        } else {
+          console.log("Failed to delete event");
+        }
+      })
+      .catch((error) => {
+        console.error("Error deleting event:", error);
+      });
   };
 
   const NigerianStates = [
@@ -502,6 +515,13 @@ const UserDashboard = () => {
                         <span class="material-symbols-outlined">
                           arrow_forward
                         </span>
+                        
+                      </div>
+                      
+                    </div>
+                    <div className="go-corner1">
+                      <div className="go-arrow1" onClick={() => handleDeleteEvent(event._id)}>
+                    <span class="material-symbols-outlined">delete</span>
                       </div>
                     </div>
                   </div>

@@ -138,11 +138,9 @@ const login = (req, res) => {
       bcrypt.compare(password, user.password, (err, match) => {
         if (err) {
           console.error("Error comparing passwords:", err);
-          return res
-            .status(500)
-            .json({
-              message: "No internet connection or Slow internet connection",
-            });
+          return res.status(500).json({
+            message: "No internet connection or Slow internet connection",
+          });
         }
 
         if (!match) {
@@ -194,7 +192,7 @@ const login = (req, res) => {
 //         });
 
 //         return existingEvent.save();
-      
+
 //       } else {
 //         const newEvent = new userEvent({
 //           userId,
@@ -245,20 +243,23 @@ const eventDetails = (req, res) => {
     file,
   } = req.body;
 
-  userEvent.findOne({ userId })
+  userEvent
+    .findOne({ userId })
     .then((user) => {
       if (!user) {
         user = new userEvent({
           userId,
-          events: [{
-            eventTitle,
-            eventType,
-            eventDate,
-            eventTime,
-            eventState,
-            venueAddress,
-            file,
-          }],
+          events: [
+            {
+              eventTitle,
+              eventType,
+              eventDate,
+              eventTime,
+              eventState,
+              venueAddress,
+              file,
+            },
+          ],
         });
       } else {
         user.events.push({
@@ -275,7 +276,8 @@ const eventDetails = (req, res) => {
     })
     .then((updatedUserEvent) => {
       console.log("Event saved successfully");
-      const recentEvent = updatedUserEvent.events[updatedUserEvent.events.length - 1];
+      const recentEvent =
+        updatedUserEvent.events[updatedUserEvent.events.length - 1];
       res.status(201).send({
         message: "Event saved successfully",
         status: 200,
@@ -293,20 +295,44 @@ const getAllEvents = (req, res) => {
   const decoded = jwt.verify(token, process.env.SECRET);
   const userId = decoded.email;
 
-  userEvent
-    .findOne({ userId })
-    .then((user) => {
-      if (!user) {
-        return res.status(404).send({ message: "User not found" });
-      }else{
-        res.status(200).send({
-          message: "User events fetched successfully",
-          status: 200,
-          events: user.events,
-        });
-      }
-    })
-}
+  userEvent.findOne({ userId }).then((user) => {
+    if (!user) {
+      return res.status(404).send({ message: "User not found" });
+    } else {
+      res.status(200).send({
+        message: "User events fetched successfully",
+        status: 200,
+        events: user.events,
+      });
+    }
+  });
+};
+
+const deleteEvent = (req, res) => {
+  const token = req.headers.authorization.split(" ")[1];
+  const decoded = jwt.verify(token, process.env.SECRET);
+  const userId = decoded.email;
+  const eventId = req.params.id;
+  console.log("Received request to delete event with ID:", eventId); // Check if the ID is received correctly
+
+  userEvent.findOneAndUpdate(
+    { userId },
+    { $pull: { events: { _id: eventId} } },
+    { new: true }
+  )
+  .then((updatedEvent) => {
+    if (updatedEvent) {
+      res.status(200).json({ message: "Event deleted successfully" });
+      console.log("event deleted successfully")
+    } else {
+      res.status(404).json({ message: "User or event not found" });
+    }
+  })
+  .catch((error) => {
+    console.error("Error deleting event:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  });
+};
 
 
 module.exports = {
@@ -315,5 +341,6 @@ module.exports = {
   login,
   eventDetails,
   verifyJWT,
-  getAllEvents
+  getAllEvents,
+  deleteEvent,
 };

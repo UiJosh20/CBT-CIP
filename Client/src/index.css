@@ -215,6 +215,20 @@
     background: linear-gradient(135deg, #6293c8, #002255);
     border-radius: 0 4px 0 32px;
   }
+
+  .go-corner1 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    width: 2em;
+    height: 2em;
+    overflow: hidden;
+    top: 150px;
+    left: 0;
+    background: linear-gradient(135deg, #7e0707, #550004);
+    border-radius:  4px  32px 0 0;
+  }
   
   .go-arrow {
     margin-top: -4px;
@@ -222,7 +236,24 @@
     color: white;
     font-family: courier, sans;
     font-size: 1px !important;
+    cursor: pointer;
 
+
+  }
+  .go-arrow span{
+    font-size: 15px;
+  }
+  .go-arrow1 {
+    margin-top: 4px;
+    margin-right: 4px;
+    color: white;
+    font-family: courier, sans;
+    font-size: 1px !important;
+    cursor: pointer;
+
+  }
+  .go-arrow1 span{
+    font-size: 15px;
   }
   
   .card {
@@ -256,6 +287,7 @@
     transition: transform 0.35s ease-out;
   }
   
+  
   .card:hover:before {
     transform: scale(30);
   }
@@ -271,6 +303,9 @@
   }
   .go-corner:hover{
     background: #60c5da;
+  }
+  .go-corner1:hover{
+    background: #e60013;
   }
  
 
