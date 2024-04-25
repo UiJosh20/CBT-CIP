@@ -29,8 +29,8 @@ const Userlayout = () => {
         .post(JWT, { token })
         .then((response) => {
           if (token === response.data.token) {
-            setLoading(false);
             setTokenMatch(true);
+            setLoading(false);
           } else {
             console.log("Token doesn't match");
             setLoading(false);
@@ -47,7 +47,7 @@ const Userlayout = () => {
     };
 
     // checkToken();
-    setInterval(checkToken, 60000);
+    setInterval(checkToken, 5000);
 
     return () => {
       clearInterval(checkToken);
@@ -55,8 +55,26 @@ const Userlayout = () => {
   },[navigate])
   return (
     <>
-    <UserNav/>
-    <Outlet/>
+    {loading ? (
+      <section className='h-screen bg-black'>
+       <div class="banter-loader">
+       <div class="banter-loader__box"></div>
+       <div class="banter-loader__box"></div>
+       <div class="banter-loader__box"></div>
+       <div class="banter-loader__box"></div>
+       <div class="banter-loader__box"></div>
+       <div class="banter-loader__box"></div>
+       <div class="banter-loader__box"></div>
+       <div class="banter-loader__box"></div>
+       <div class="banter-loader__box"></div>
+     </div>
+      </section>
+      ) : (
+        <>
+        <UserNav />
+        <Outlet />
+      </>
+      )}
     </>
   )
 }
