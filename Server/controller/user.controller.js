@@ -94,7 +94,8 @@ const verifyToken = (req, res) => {
       res.status(400).send({ message: "Invalid verification token" });
     } else {
       user.verified = true;
-      user.save()
+      user
+        .save()
         .then(() => {
           res.send({ message: "Email verified successfully", status: 200 });
         })
@@ -106,8 +107,7 @@ const verifyToken = (req, res) => {
   });
 };
 
-
-const verifyJWT = (req, res) =>{
+const verifyJWT = (req, res) => {
   const { token } = req.body;
   jwt.verify(token, process.env.SECRET, (err, decoded) => {
     if (err) {
@@ -123,7 +123,7 @@ const verifyJWT = (req, res) =>{
       });
     }
   });
-}
+};
 
 const login = (req, res) => {
   let { email, password } = req.body;
@@ -138,7 +138,11 @@ const login = (req, res) => {
       bcrypt.compare(password, user.password, (err, match) => {
         if (err) {
           console.error("Error comparing passwords:", err);
-          return res.status(500).json({ message: "No internet connection or Slow internet connection" });
+          return res
+            .status(500)
+            .json({
+              message: "No internet connection or Slow internet connection",
+            });
         }
 
         if (!match) {
@@ -162,29 +166,121 @@ const login = (req, res) => {
     });
 };
 
+// const eventDetails = (req, res) => {
+//   const token = req.headers.authorization.split(" ")[1];
+//   const decoded = jwt.verify(token, process.env.SECRET);
+//   const userId = decoded.email;
+//   const {
+//     eventTitle,
+//     eventType,
+//     eventDate,
+//     eventTime,
+//     eventState,
+//     venueAddress,
+//     file,
+//   } = req.body;
+
+//   userEvent
+//     .findOne({ userId })
+//     .then((existingEvent) => {
+//       if (existingEvent) {
+//         existingEvent.events.push({
+//           eventTitle,
+//           eventType,
+//           eventDate,
+//           eventTime,
+//           eventState,
+//           venueAddress,
+//         });
+
+//         return existingEvent.save();
+      
+//       } else {
+//         const newEvent = new userEvent({
+//           userId,
+//           events: [
+//             {
+//               eventTitle,
+//               eventType,
+//               eventDate,
+//               eventTime,
+//               eventState,
+//               venueAddress,
+//             },
+//           ],
+//         });
+
+//         return newEvent.save();
+//       }
+//     })
+//     .then((updatedEvent) => {
+//       console.log("Event saved successfully");
+//       const recentEvent = updatedEvent.events ? updatedEvent.events[updatedEvent.events.length - 1] : null;
+// console.log(recentEvent)
+//       res
+//         .status(201)
+//         .send({
+//           message: "Event saved successfully",
+//           status: 200,
+//           recentEvent: recentEvent,
+//         });
+//     })
+//     .catch((error) => {
+//       console.error("Error saving event:", error);
+//       res.status(500).json({ message: "Internal Server Error" });
+//     });
+// };
 
 const eventDetails = (req, res) => {
   const token = req.headers.authorization.split(" ")[1];
   const decoded = jwt.verify(token, process.env.SECRET);
   const userId = decoded.email;
-  const { eventTitle, eventType, eventDate, eventTime, eventState, venueAddress, file } = req.body;
+  const {
+    eventTitle,
+    eventType,
+    eventDate,
+    eventTime,
+    eventState,
+    venueAddress,
+    file,
+  } = req.body;
 
-  const event = new userEvent({
-    userId,
-    events: [{
-      eventTitle,
-      eventType,
-      eventDate,
-      eventTime,
-      eventState,
-      venueAddress,
-    }],
-  });
-
-  event.save()
-    .then((events) => {
+  userEvent.findOne({ userId })
+    .then((user) => {
+      if (!user) {
+        user = new userEvent({
+          userId,
+          events: [{
+            eventTitle,
+            eventType,
+            eventDate,
+            eventTime,
+            eventState,
+            venueAddress,
+            file,
+          }],
+        });
+      } else {
+        user.events.push({
+          eventTitle,
+          eventType,
+          eventDate,
+          eventTime,
+          eventState,
+          venueAddress,
+          file,
+        });
+      }
+      return user.save();
+    })
+    .then((updatedUserEvent) => {
       console.log("Event saved successfully");
-      res.status(201).send({ message: "Event saved successfully", status: 200, events });
+      const recentEvent = updatedUserEvent.events[updatedUserEvent.events.length - 1];
+      res.status(201).send({
+        message: "Event saved successfully",
+        status: 200,
+        recentEvent: recentEvent,
+      });
     })
     .catch((error) => {
       console.error("Error saving event:", error);
@@ -192,9 +288,26 @@ const eventDetails = (req, res) => {
     });
 };
 
-const confirmEventDetails = (req, res) => {
+const getAllEvents = (req, res) => {
+  const token = req.headers.authorization.split(" ")[1];
+  const decoded = jwt.verify(token, process.env.SECRET);
+  const userId = decoded.email;
 
+  userEvent
+    .findOne({ userId })
+    .then((user) => {
+      if (!user) {
+        return res.status(404).send({ message: "User not found" });
+      }else{
+        res.status(200).send({
+          message: "User events fetched successfully",
+          status: 200,
+          events: user.events,
+        });
+      }
+    })
 }
+
 
 module.exports = {
   register,
@@ -202,5 +315,5 @@ module.exports = {
   login,
   eventDetails,
   verifyJWT,
-  confirmEventDetails,
+  getAllEvents
 };

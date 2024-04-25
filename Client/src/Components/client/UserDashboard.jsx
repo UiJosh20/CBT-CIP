@@ -160,17 +160,12 @@ const UserDashboard = () => {
   };
 
   const handleNext = () => {
-    if (activeStep === 1) {
+   if (activeStep === 2) {
       const newCompleted = completed;
       newCompleted[activeStep] = true;
       setCompleted(newCompleted);
-      setCurrentStep(currentStep + 1);
-    } else if (activeStep === 2) {
-      const newCompleted = completed;
-      newCompleted[activeStep] = true;
-      setCompleted(newCompleted);
-      getAllEvents();
-      setOpen(false); // Close the modal
+      // getAllEvents();
+      setOpen(false); 
     } else {
       const newActiveStep =
         isLastStep() && !allStepsCompleted()
