@@ -212,7 +212,7 @@
     overflow: hidden;
     top: 0;
     right: 0;
-    background: linear-gradient(135deg, #6293c8, #384c6c);
+    background: linear-gradient(135deg, #6293c8, #002255);
     border-radius: 0 4px 0 32px;
   }
   
@@ -221,6 +221,8 @@
     margin-right: -4px;
     color: white;
     font-family: courier, sans;
+    font-size: 1px !important;
+
   }
   
   .card {
@@ -235,7 +237,7 @@
     text-decoration: none;
     z-index: 0;
     overflow: hidden;
-    background: linear-gradient(to bottom, #c3e6ec, #a7d1d9);
+    background: linear-gradient(to bottom, #c3e6ec, #60c5da);
     font-family: Arial, Helvetica, sans-serif;
   }
   
@@ -245,7 +247,7 @@
     z-index: -1;
     top: -16px;
     right: -16px;
-    background: linear-gradient(135deg, #364a60, #384c6c);
+    background: linear-gradient(135deg, #002f61, #384c6c);
     height: 32px;
     width: 32px;
     border-radius: 32px;
@@ -255,7 +257,7 @@
   }
   
   .card:hover:before {
-    transform: scale(28);
+    transform: scale(30);
   }
   
   .card:hover .small-desc {
@@ -267,7 +269,15 @@
     transition: all 0.5s ease-out;
     color: #ffffff;
   }
+  .go-corner:hover{
+    background: #60c5da;
+  }
+ 
 
+  .minHeight{
+    max-height: 500px ;
+    overflow-y: auto;
+  }
   
 
   @media screen and (max-width: 480px) {

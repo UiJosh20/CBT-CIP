@@ -57,7 +57,7 @@ const UserDashboard = () => {
   const [events, setEvents] = useState([]);
 
   useEffect(() => {
-    const getAllEvents = () =>{
+    const getAllEvents = () => {
       const token = localStorage.getItem("token");
       axios
         .get("http://localhost:3000/getAllEvents", {
@@ -75,7 +75,7 @@ const UserDashboard = () => {
         .catch((error) => {
           console.error("Error fetching events:", error);
         });
-    }
+    };
     getAllEvents();
   }, []);
 
@@ -160,10 +160,18 @@ const UserDashboard = () => {
   };
 
   const handleNext = () => {
-    if(activeStep == 2){
+    if (activeStep === 1) {
+      const newCompleted = completed;
+      newCompleted[activeStep] = true;
+      setCompleted(newCompleted);
+      setCurrentStep(currentStep + 1);
+    } else if (activeStep === 2) {
+      const newCompleted = completed;
+      newCompleted[activeStep] = true;
+      setCompleted(newCompleted);
       getAllEvents();
-      setOpen(false);
-    }else{
+      setOpen(false); // Close the modal
+    } else {
       const newActiveStep =
         isLastStep() && !allStepsCompleted()
           ? steps.findIndex((step, i) => !(i in completed))
@@ -483,23 +491,23 @@ const UserDashboard = () => {
         {events.length > 0 ? (
           <main className="mt-10">
             <h6 className="text-center poppins-medium-sm">EVENT HISTORY</h6>
-            <section className="flex  px-4 mt-2 justify-center items-center flex-wrap gap-5 py-5  mx-auto">
+            <section className="flex  lg:px-4 lg:pb-10 mt-2 justify-center items-center flex-wrap gap-5 py-5  mx-auto minHeight">
               {events.map((event) => (
                 <div key={event._id} className="flex flex-wrap">
                   <div class="card">
                     <p class="card-title">{event.eventTitle}</p>
-                    <p class="small-desc">
-                      {event.venueAddress}, 
-                    </p>
+                    <p class="small-desc">{event.venueAddress},</p>
                     <p class="small-desc">
                       {new Date(event.eventDate).toLocaleDateString()}
                     </p>
-                    <p class="small-desc">
-                     {event.eventTime}
-                    </p>
+                    <p class="small-desc">{event.eventTime}</p>
 
                     <div class="go-corner">
-                      <div class="go-arrow">→</div>
+                      <div class="go-arrow">
+                        <span class="material-symbols-outlined">
+                          arrow_forward
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
