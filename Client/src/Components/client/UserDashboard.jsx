@@ -19,6 +19,7 @@ import {
 import Stepper from "@mui/material/Stepper";
 import Step from "@mui/material/Step";
 import StepButton from "@mui/material/StepButton";
+import { useEffect } from "react";
 
 const steps = ["Create an event", "Confirm event details", "Finish"];
 
@@ -53,7 +54,30 @@ const UserDashboard = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState({});
   const [details, setDetails] = useState([]);
-  // const [myFile, setMyFile] = useState(null);
+  const [events, setEvents] = useState([]);
+
+  useEffect(() => {
+    const getAllEvents = () =>{
+      const token = localStorage.getItem("token");
+      axios
+        .get("http://localhost:3000/getAllEvents", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((res) => {
+          if (res.data.events) {
+            setEvents(res.data.events);
+          } else {
+            console.log("No events found");
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching events:", error);
+        });
+    }
+    getAllEvents();
+  }, []);
 
   const showModal = () => {
     setOpen(true);
@@ -96,7 +120,7 @@ const UserDashboard = () => {
   };
 
   const handleSubmit = (event) => {
-    if(currentStep === 0){
+    if (currentStep === 0) {
       let token = localStorage.getItem("token");
       event.preventDefault();
       axios
@@ -107,17 +131,16 @@ const UserDashboard = () => {
         })
         .then((res) => {
           if (res) {
-            console.log(res.data.events.events[0]);
-            setDetails(res.data.events.events[0]);
+            console.log(res.data.recentEvent);
+            setDetails(res.data.recentEvent);
             handleComplete();
           } else {
             console.log("something went wrong");
           }
         });
-    }else{
+    } else {
       handleStepCompletion();
     }
-
   };
 
   const totalSteps = () => {
@@ -137,12 +160,17 @@ const UserDashboard = () => {
   };
 
   const handleNext = () => {
-    const newActiveStep =
-      isLastStep() && !allStepsCompleted()
-        ? steps.findIndex((step, i) => !(i in completed))
-        : activeStep + 1;
-    setActiveStep(newActiveStep);
-    setCurrentStep(currentStep + 1);
+    if(activeStep == 2){
+      getAllEvents();
+      setOpen(false);
+    }else{
+      const newActiveStep =
+        isLastStep() && !allStepsCompleted()
+          ? steps.findIndex((step, i) => !(i in completed))
+          : activeStep + 1;
+      setActiveStep(newActiveStep);
+      setCurrentStep(currentStep + 1);
+    }
   };
 
   const handleBack = () => {
@@ -311,29 +339,28 @@ const UserDashboard = () => {
           <p className="poppins-medium-sm">{details.eventType}</p>
         </div>
         <div className="flex gap-4 justify-between">
-          <p className="poppins-bold-md">State  : </p>
+          <p className="poppins-bold-md">State : </p>
           <p className="poppins-medium-sm">{details.eventState}</p>
         </div>
         <div className="flex gap-4  justify-between">
           <p className="poppins-bold-md">Venue Address : </p>
           <p className="poppins-medium-sm">{details.venueAddress}</p>
-
         </div>
         <div className="flex gap-4 justify-between">
           <p className="poppins-bold-md">Date : </p>
           <p className="poppins-medium-sm">{details.eventDate}</p>
-
         </div>
         <div className="flex gap-4 justify-between items-center">
           <p className="poppins-bold-md">Time : </p>
           <p className="poppins-medium-sm">{details.eventTime}</p>
-
         </div>
       </div>
     </div>,
     <div>
-      <p>Your event has been created successfully, please proceed</p>
-    </div>
+      <p className="poppins-regular font-bold">
+        Your event has been created successfully, please proceed
+      </p>
+    </div>,
   ];
 
   return (
@@ -342,7 +369,7 @@ const UserDashboard = () => {
         <main className="bg-white px-5 py-10 lg:w-full flex justify-center mt-5">
           <Button
             variant="contained"
-            className="bg-blue-500 flex items-center gap-2"
+            className="bgblue500 flex items-center gap-2"
             type="primary"
             onClick={showModal}
           >
@@ -407,7 +434,7 @@ const UserDashboard = () => {
                           >
                             <Button
                               color="inherit"
-                              disabled={activeStep === 0}
+                              disabled={activeStep === 0 || activeStep === 1}
                               onClick={handleBack}
                               sx={{ mr: 1 }}
                             >
@@ -417,7 +444,7 @@ const UserDashboard = () => {
                             <Button
                               onClick={handleNext}
                               sx={{ mr: 1 }}
-                              // disabled={activeStep === 0 }
+                              disabled={activeStep === 0}
                             >
                               Next
                             </Button>
@@ -430,7 +457,13 @@ const UserDashboard = () => {
                                   Step {activeStep + 1} already completed
                                 </Typography>
                               ) : (
-                                <Button type="submit" variant="contained">
+                                <Button
+                                  type="submit"
+                                  variant="contained"
+                                  disabled={
+                                    activeStep === 1 || activeStep === 2
+                                  }
+                                >
                                   {completedSteps() === totalSteps() - 1
                                     ? "Finish"
                                     : "Complete Step"}
@@ -446,12 +479,41 @@ const UserDashboard = () => {
             </form>
           </Modal>
         </main>
-        <main className="mt-10">
-          <h6 className="text-center poppins-medium-sm">EVENT HISTORY</h6>
-          <section className="flex  px-4 mt-2 justify-center items-center flex-wrap gap-5 py-5 border-t-2 border-gray-100 w96 mx-auto">
-            <h4 className="noEvents poppins-medium mt-10">No events yet</h4>
-          </section>
-        </main>
+
+        {events.length > 0 ? (
+          <main className="mt-10">
+            <h6 className="text-center poppins-medium-sm">EVENT HISTORY</h6>
+            <section className="flex  px-4 mt-2 justify-center items-center flex-wrap gap-5 py-5  mx-auto">
+              {events.map((event) => (
+                <div key={event._id} className="flex flex-wrap">
+                  <div class="card">
+                    <p class="card-title">{event.eventTitle}</p>
+                    <p class="small-desc">
+                      {event.venueAddress}, 
+                    </p>
+                    <p class="small-desc">
+                      {new Date(event.eventDate).toLocaleDateString()}
+                    </p>
+                    <p class="small-desc">
+                     {event.eventTime}
+                    </p>
+
+                    <div class="go-corner">
+                      <div class="go-arrow">→</div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </section>
+          </main>
+        ) : (
+          <main className="mt-10">
+            <h6 className="text-center poppins-medium-sm">EVENT HISTORY</h6>
+            <section className="flex  px-4 mt-2 justify-center items-center flex-wrap gap-5 py-5 border-t-2 border-gray-100 w96 mx-auto">
+              <h4 className="noEvents poppins-medium mt-10">No events yet</h4>
+            </section>
+          </main>
+        )}
       </section>
     </>
   );
