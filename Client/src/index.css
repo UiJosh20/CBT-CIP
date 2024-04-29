@@ -809,6 +809,10 @@
   .banter-loader__box:nth-child(9) {
     animation: moveBox-9 4s infinite;
   }
+  .bg-bluie{
+    background-color: #002255;
+    color: white;
+  }
   
 
   @media screen and (max-width: 480px) {

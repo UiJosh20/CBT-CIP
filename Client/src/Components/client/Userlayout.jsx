@@ -46,7 +46,6 @@ const Userlayout = () => {
         });
     };
 
-    // checkToken();
     setInterval(checkToken, 5000);
 
     return () => {
