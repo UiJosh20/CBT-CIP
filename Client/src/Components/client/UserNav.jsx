@@ -3,6 +3,8 @@
   import DashboardSharpIcon from '@mui/icons-material/DashboardSharp';
   import WatchLaterSharpIcon from '@mui/icons-material/WatchLaterSharp';
   import EventAvailableSharpIcon from '@mui/icons-material/EventAvailableSharp';
+  import FormatListNumberedSharpIcon from '@mui/icons-material/FormatListNumberedSharp';
+  import BookmarksSharpIcon from '@mui/icons-material/BookmarksSharp';
   import React, { useState } from "react";
   import { useEffect } from "react";
   import { Link } from "react-router-dom";
@@ -43,8 +45,12 @@
                 <p className="poppins-medium-sm">Completed events</p>
               </Link>
               <Link to='/user/completed' className={`flex items-center gap-4 px-5 py-3 mt-2 cursor-pointer ${activeMenuItem === "completed" ? "border-s-2 border-white" : ""}`} onClick={() => handleMenuItemClick("completed")}>
-                <EventAvailableSharpIcon />
+                <FormatListNumberedSharpIcon/>
                 <p className="poppins-medium-sm">Guests</p>
+              </Link>
+              <Link to='/user/completed' className={`flex items-center gap-4 px-5 py-3 mt-2 cursor-pointer ${activeMenuItem === "completed" ? "border-s-2 border-white" : ""}`} onClick={() => handleMenuItemClick("completed")}>
+                <BookmarksSharpIcon/>
+                <p className="poppins-medium-sm">Favorite</p>
               </Link>
             </List>
           </Box>
