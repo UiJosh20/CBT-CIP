@@ -11,12 +11,8 @@ const Userlayout = () => {
   let token = localStorage.getItem("token")
 
 
+
   useEffect(() => {
-    if(!token){
-     navigate("/home")
-    }else{
-      navigate("/user/dashboard")
-    }
     const checkToken = () => {
       const token = localStorage.getItem("token");
       if (!token) {

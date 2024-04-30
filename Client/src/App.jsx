@@ -5,8 +5,8 @@ import Blog from "./Components/Blog";
 import About from "./Components/About";
 import Userlayout from "./Components/client/Userlayout";
 import UserDashboard from "./Components/client/UserDashboard";
-import CompletedEvents from "./Components/client/CompletedEvents";
-import Ongoing from "./Components/client/Ongoing";
+import UserCompletedEvents from "./Components/client/UserCompletedEvents";
+import UserOngoing from "./Components/client/UserOngoing";
 
 
 function App() {
@@ -23,8 +23,8 @@ function App() {
         {/* client layout */}
         <Route path="/user" element={<Userlayout />}>
         <Route path="/user/dashboard" element={<UserDashboard/>}/>
-        <Route path="/user/completed" element={<CompletedEvents/>}/>
-        <Route path="/user/ongoing" element={<Ongoing/>}/>
+        <Route path="/user/completed" element={<UserCompletedEvents/>}/>
+        <Route path="/user/ongoing" element={<UserOngoing/>}/>
 
         </Route>
       </Routes>

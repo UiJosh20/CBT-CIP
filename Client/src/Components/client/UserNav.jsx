@@ -29,32 +29,7 @@
     }, []);
 
     
-    const DrawerList = (
-      <Box sx={{ width: 220, height: "100vh", }} role="presentation" onClick={toggleDrawer(false)} className="custom-color text-white">
-            <List>
-              <Link to='/user/dashboard' className={`flex items-center gap-4 p-5 mt-20 cursor-pointer ${activeMenuItem === "dashboard" ? "border-s-2 border-white" : ""}`} onClick={() => handleMenuItemClick("dashboard")}>
-                <DashboardSharpIcon />
-                <p className="poppins-medium-sm">Dashboard</p>
-              </Link>
-              <Link to='/user/ongoing' id='ongoing' className={`flex items-center gap-4 px-5 py-3 mt-2 cursor-pointer ${activeMenuItem === "ongoing" ? "border-s-2 border-white" : ""}`} onClick={() => handleMenuItemClick("ongoing")}>
-                <WatchLaterSharpIcon />
-                <p className="poppins-medium-sm">Ongoing events</p>
-              </Link>
-              <Link to='/user/completed' className={`flex items-center gap-4 px-5 py-3 mt-2 cursor-pointer ${activeMenuItem === "completed" ? "border-s-2 border-white" : ""}`} onClick={() => handleMenuItemClick("completed")}>
-                <EventAvailableSharpIcon />
-                <p className="poppins-medium-sm">Completed events</p>
-              </Link>
-              <Link to='/user/completed' className={`flex items-center gap-4 px-5 py-3 mt-2 cursor-pointer ${activeMenuItem === "completed" ? "border-s-2 border-white" : ""}`} onClick={() => handleMenuItemClick("completed")}>
-                <FormatListNumberedSharpIcon/>
-                <p className="poppins-medium-sm">Guests</p>
-              </Link>
-              <Link to='/user/completed' className={`flex items-center gap-4 px-5 py-3 mt-2 cursor-pointer ${activeMenuItem === "completed" ? "border-s-2 border-white" : ""}`} onClick={() => handleMenuItemClick("completed")}>
-                <BookmarksSharpIcon/>
-                <p className="poppins-medium-sm">Favorite</p>
-              </Link>
-            </List>
-          </Box>
-    );
+  
     
     return (
       <>
@@ -73,10 +48,34 @@
               menu
             </span>
           </div>
+         
         </nav>
 
         <Drawer open={open} onClose={toggleDrawer(false)}>
-          {DrawerList}
+        <Box sx={{ width: 220, height: "100vh", }} role="presentation" onClick={toggleDrawer(false)} className="custom-color text-white">
+            <List>
+              <Link to='/user/dashboard' className={`flex items-center gap-4 p-5 mt-20 cursor-pointer ${activeMenuItem === "dashboard" ? "border-s-2 border-white" : ""}`} onClick={() => handleMenuItemClick("dashboard")}>
+                <DashboardSharpIcon />
+                <p className="poppins-medium-sm">Dashboard</p>
+              </Link>
+              <Link to='/user/ongoing' className={`flex items-center gap-4 px-5 py-3 mt-2 cursor-pointer ${activeMenuItem === "ongoing" ? "border-s-2 border-white" : ""}`} onClick={() => handleMenuItemClick("ongoing")}>
+                <WatchLaterSharpIcon />
+                <p className="poppins-medium-sm">Ongoing events</p>
+              </Link>
+              <Link to='/user/completed' className={`flex items-center gap-4 px-5 py-3 mt-2 cursor-pointer ${activeMenuItem === "completed" ? "border-s-2 border-white" : ""}`} onClick={() => handleMenuItemClick("completed")}>
+                <EventAvailableSharpIcon />
+                <p className="poppins-medium-sm">Completed events</p>
+              </Link>
+              <Link to='/user/completed' className={`flex items-center gap-4 px-5 py-3 mt-2 cursor-pointer ${activeMenuItem === "guest" ? "border-s-2 border-white" : ""}`} onClick={() => handleMenuItemClick("guest")}>
+                <FormatListNumberedSharpIcon/>
+                <p className="poppins-medium-sm">Guests</p>
+              </Link>
+              <Link to='/user/completed' className={`flex items-center gap-4 px-5 py-3 mt-2 cursor-pointer ${activeMenuItem === "favorite" ? "border-s-2 border-white" : ""}`} onClick={() => handleMenuItemClick("favorite")}>
+                <BookmarksSharpIcon/>
+                <p className="poppins-medium-sm">Favorite</p>
+              </Link>
+            </List>
+          </Box>
         </Drawer>
       </>
     );
