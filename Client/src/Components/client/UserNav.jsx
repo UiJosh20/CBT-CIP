@@ -60,7 +60,7 @@
               </Link>
               <Link to='/user/ongoing' className={`flex items-center gap-4 px-5 py-3 mt-2 cursor-pointer ${activeMenuItem === "ongoing" ? "border-s-2 border-white" : ""}`} onClick={() => handleMenuItemClick("ongoing")}>
                 <WatchLaterSharpIcon />
-                <p className="poppins-medium-sm">Ongoing events</p>
+                <p className="poppins-medium-sm">New Events</p>
               </Link>
               <Link to='/user/completed' className={`flex items-center gap-4 px-5 py-3 mt-2 cursor-pointer ${activeMenuItem === "completed" ? "border-s-2 border-white" : ""}`} onClick={() => handleMenuItemClick("completed")}>
                 <EventAvailableSharpIcon />

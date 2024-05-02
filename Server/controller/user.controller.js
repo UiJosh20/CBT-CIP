@@ -249,8 +249,8 @@ const deleteEvent = (req, res) => {
   const decoded = jwt.verify(token, process.env.SECRET);
   const userId = decoded.email;
   const eventId = req.params.id;
-  console.log("Received request to delete event with ID:", eventId); // Check if the ID is received correctly
-
+  console.log("Received request to delete event with ID:", eventId); 
+  
   userEvent.findOneAndUpdate(
     { userId },
     { $pull: { events: { _id: eventId} } },
